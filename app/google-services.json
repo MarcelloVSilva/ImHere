@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "745348089078",
+    "firebase_url": "https://tcc-nfc.firebaseio.com",
+    "project_id": "tcc-nfc",
+    "storage_bucket": "tcc-nfc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:745348089078:android:58f6202f7eab46b9",
+        "android_client_info": {
+          "package_name": "com.example.marcello.tomadordefrequencia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "745348089078-2pab0klv31omq6kvglrbn9sha8ara0e4.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "745348089078-2pab0klv31omq6kvglrbn9sha8ara0e4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAopHjAdZIteuueegjJZFoPfPqZHiuIgf4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
