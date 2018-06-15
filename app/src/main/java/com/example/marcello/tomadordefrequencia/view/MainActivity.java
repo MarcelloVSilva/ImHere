@@ -33,13 +33,13 @@ public class MainActivity extends AppCompatActivity {
 
     private DatabaseReference mDatabase;
     private String tomadorEmUso;
-    Tomador disciplina = new Tomador();
+    Tomador disciplinas = new Tomador();
     public static JSONObject db;
     Object db1;
 
 
     Subject<Tomador> mObservable = PublishSubject.create();
-    ArrayList arrDisciplinas = new ArrayList();
+    ArrayList<Tomador> arrDisciplinas = new ArrayList();
     private JSONObject fakeDb;
 
     @Override
@@ -47,38 +47,56 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tomadorEmUso = "cac209";
-        try {
-            fakeDb = new JSONObject(loadJSONFromAsset());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-    }
-        public String loadJSONFromAsset() {
-            String json = null;
-            try {
-                InputStream is = this.getAssets().open("demo.json");
-                int size = is.available();
-                byte[] buffer = new byte[size];
-                is.read(buffer);
-                is.close();
-                json = new String(buffer, "UTF-8");
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                return null;
-            }
-            return json;
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+//        try {
+//            fakeDb = new JSONObject(loadJSONFromAsset());
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
+//        public String loadJSONFromAsset() {
+//            String json = null;
+//            try {
+//                InputStream is = this.getAssets().open("demo.json");
+//                int size = is.available();
+//                byte[] buffer = new byte[size];
+//                is.read(buffer);
+//                is.close();
+//                json = new String(buffer, "UTF-8");
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//                return null;
+//            }
+//            return json;
         }
 
 
     @Override
     public void onStart() {
         super.onStart();
+        pegaDisciplinas();
+
+
+
+
+
+
+
 
         // pega as disciplinas do tomador
+//        try {
+//            Object tomadores = fakeDb.get("tomadores");
+//            tomador = tomadores.get(tomadorEmUso);
+//            disciplinas = (Tomador) tomador.get("disciplinas");
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
 
-        // verifica e seleciona qual disciplina é de hoje
-            // se nao tem mostra tela que nao tem disciplina hoje
+        // verifica e seleciona qual disciplinas é de hoje
+            // se nao tem mostra tela que nao tem disciplinas hoje
 
         // pega aulas
             // se nao tem mostra tela que nao tem aulas pra hoje
@@ -92,10 +110,10 @@ public class MainActivity extends AppCompatActivity {
         // acabou - checkin/checkout: fimDoProcesso
             // ao fim do checkout mostra a proxima aula ou que não mais aulas hoje
 
-        // professor clicou para entrar na disciplina:
+        // professor clicou para entrar na disciplinas:
             // inserirCodDisciplina
 
-        // mostrar informaçoes disciplina:
+        // mostrar informaçoes disciplinas:
 
         // liberar checkin pelo tablet:
 
@@ -103,7 +121,50 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        public String dataHoje(String hora){
+    private void pegaDisciplinas() {
+
+        mDatabase.child("tomadores/"+tomadorEmUso+"/disciplinas").
+                addValueEventListener(new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot ds: dataSnapshot.getChildren()){
+                            disciplinas = ds.getValue(Tomador.class);
+                            arrDisciplinas.add(disciplinas);
+                            pegaAulasDaDisciplina();
+
+                            Log.d("disciplinas", disciplinas.nome);
+                            Log.d("disciplinas", disciplinas.diasDaSemana);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.d("Log", "passou aqui");
+                    }
+                });
+    }
+
+    private void pegaAulasDaDisciplina() {
+        for(Tomador disciplina : arrDisciplinas) {
+            mDatabase.child("/disciplinas/"+disciplina.codigo).
+                    addValueEventListener(new ValueEventListener() {
+
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Log.d("Log", "passou");
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.d("Log", "passou aqui");
+                        }
+                    });
+        }
+    }
+
+    public String dataHoje(String hora){
             String momentoAtual = new Date().toString().replace(" ", "");
             return momentoAtual; // assim nao vai dar certo. Arrumar forma de setar hora no new Date
         }
@@ -119,18 +180,18 @@ public class MainActivity extends AppCompatActivity {
 
     /*
     * mDatabase = FirebaseDatabase.getInstance().getReference();
-        ValueEventListener pegaDisciplinas = mDatabase.child("tomadores").child(tomadorEmUso).child("disciplina").
+        ValueEventListener pegaDisciplinas = mDatabase.child("tomadores").child(tomadorEmUso).child("disciplinas").
         addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 for (DataSnapshot ds: dataSnapshot.getChildren()){
-                    disciplina = ds.getValue(Tomador.class);
-                    arrDisciplinas.add(disciplina);
+                    disciplinas = ds.getValue(Tomador.class);
+                    arrDisciplinas.add(disciplinas);
 
-                    Log.d("disciplina", disciplina.nome);
-                    Log.d("disciplina", disciplina.diasDaSemana);
+                    Log.d("disciplinas", disciplinas.nome);
+                    Log.d("disciplinas", disciplinas.diasDaSemana);
                 }
             }
 
