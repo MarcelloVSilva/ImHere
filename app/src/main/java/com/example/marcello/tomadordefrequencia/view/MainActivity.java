@@ -14,9 +14,17 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.example.marcello.tomadordefrequencia.model.Tomador;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
@@ -26,105 +34,72 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private String tomadorEmUso;
     Tomador disciplina = new Tomador();
+    public static JSONObject db;
+    Object db1;
+
 
     Subject<Tomador> mObservable = PublishSubject.create();
     ArrayList arrDisciplinas = new ArrayList();
+    private JSONObject fakeDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tomadorEmUso = "cac209";
+        try {
+            fakeDb = new JSONObject(loadJSONFromAsset());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-
-//        ValueEventListener pegaDisciplinas =
-
-
-                ValueEventListener pegaDisciplinas = mDatabase.child("tomadores").child(tomadorEmUso).child("disciplina").
-                addValueEventListener(new ValueEventListener() {
-
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-
-                        for (DataSnapshot ds: dataSnapshot.getChildren()){
-                            disciplina = ds.getValue(Tomador.class);
-                            arrDisciplinas.add(disciplina);
-
-                            Log.d("disciplina", disciplina.nome);
-                            Log.d("disciplina", disciplina.diasDaSemana);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.d("Log", "passou aqui");
-                    }
-                });
-
-        mObservable.map(value -> {
-            if (!value.codigo.isEmpty()) {
-                return criaObserverAulas(value);
+    }
+        public String loadJSONFromAsset() {
+            String json = null;
+            try {
+                InputStream is = this.getAssets().open("demo.json");
+                int size = is.available();
+                byte[] buffer = new byte[size];
+                is.read(buffer);
+                is.close();
+                json = new String(buffer, "UTF-8");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                return null;
             }
-            return false;
-        });
+            return json;
+        }
 
-//        Observable.just(pegaDisciplinas)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribeWith(new DisposableObserver<ValueEventListener>() {
-//                    @Override
-//                    public void onNext(Tomador tomador) {
-//                        Log.d("Observer", "Next");
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//                        Log.d("Observer", "Complete");
-//                    }
-//                });
-
-
-        /*
-        * Quando a aplicao iniciar no tablet tem haver algum tipo de: fakeLoginTomador("cac209")
-        * Onde ao iniciar meio que o tablet diz: Olá, eu sou o tomador de id cac209.
-        * */
-
-    }
-
-    private void criaObserverAulas(Tomador value) {
-        mDatabase.child("disciplina").child("FIC0046"/*value */).child("aulas").
-                addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Aula aulaAtual = dataSnapshot.child(dataHoje(disciplina.horarioDeInicioAula)).getValue(Aula.class);
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.d("Log", "passou aqui");
-                    }
-                });
-    }
 
     @Override
     public void onStart() {
         super.onStart();
 
+        // pega as disciplinas do tomador
 
-//        FirebaseDatabase.getInstance().setPersistenceEnabled(true); //save offline
+        // verifica e seleciona qual disciplina é de hoje
+            // se nao tem mostra tela que nao tem disciplina hoje
 
+        // pega aulas
+            // se nao tem mostra tela que nao tem aulas pra hoje
 
-        /*
-        * Tenho que: ver qual a próxima disciplina que é de hoje, depois ver se tem aula pra ela hoje
-        * */
+        // mostra a proxima aula do dia para esse tomador
 
+        // checkin/checkout: emProcesso
+            // lerCartao/inserirMatricula
+                // ao identificar aluno: identificarAlunoNegativo/identificarAlunoPositivo
 
+        // acabou - checkin/checkout: fimDoProcesso
+            // ao fim do checkout mostra a proxima aula ou que não mais aulas hoje
+
+        // professor clicou para entrar na disciplina:
+            // inserirCodDisciplina
+
+        // mostrar informaçoes disciplina:
+
+        // liberar checkin pelo tablet:
+
+        // liberar checkou pelo tablet:
 
         }
 
@@ -134,3 +109,41 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+
+
+
+
+
+
+
+    /*
+    * mDatabase = FirebaseDatabase.getInstance().getReference();
+        ValueEventListener pegaDisciplinas = mDatabase.child("tomadores").child(tomadorEmUso).child("disciplina").
+        addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot ds: dataSnapshot.getChildren()){
+                    disciplina = ds.getValue(Tomador.class);
+                    arrDisciplinas.add(disciplina);
+
+                    Log.d("disciplina", disciplina.nome);
+                    Log.d("disciplina", disciplina.diasDaSemana);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d("Log", "passou aqui");
+            }
+        });
+
+
+        * Quando a aplicao iniciar no tablet tem haver algum tipo de: fakeLoginTomador("cac209")
+        * Onde ao iniciar meio que o tablet diz: Olá, eu sou o tomador de id cac209.
+        *
+
+
+    */
