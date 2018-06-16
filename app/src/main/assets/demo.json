@@ -231,8 +231,14 @@
                 "codigo": "FIC0046",
                 "nome":"COMUNICAÇÃO EMPRESARIAL",
                 "nomeProfessor": "Joao Teste Professor",
-                "diasDaSemana":"quinta",
-                "horarioDeInicioAula": "18:50"
+                "diasDaSemana": [5],
+                "horarioDeInicioAula": "5-18:50"
+            },{
+                "codigo": "INF0046",
+                "nome":"DESENVOLVIMENTO DE SOFTWARE P/ DISPOSITIVOS UBÍQUO",
+                "nomeProfessor": "Maria Teste Professora",
+                "diasDaSemana":[4],
+                "horarioDeInicioAula": "4-18:50"
             }]
         },
         "inf152":{
@@ -241,8 +247,8 @@
                     "codigo": "INF0046",
                     "nome":"DESENVOLVIMENTO DE SOFTWARE P/ DISPOSITIVOS UBÍQUO",
                     "nomeProfessor": "Maria Teste Professora",
-                    "diasDaSemana":"quarta",
-                    "horarioDeInicioAula": "18:50"
+                    "diasDaSemana":[4],
+                    "horarioDeInicioAula": "4-18:50"
                 }
         ]
         },
@@ -251,8 +257,8 @@
                 "codigo": "INF0225",
                 "nome":"VERIFICAÇÃO E VALIDAÇÃO",
                 "nomeProfessor": "Maria Teste Professora",
-                "diasDaSemana":"terca",
-                "horarioDeInicioAula": "18:50"
+                "diasDaSemana":[3],
+                "horarioDeInicioAula": "3-18:50"
             }]
         }
     }

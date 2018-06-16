@@ -3,9 +3,9 @@ package com.example.marcello.tomadordefrequencia.view;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.example.marcello.tomadordefrequencia.R;
-import com.example.marcello.tomadordefrequencia.model.Aula;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -14,15 +14,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.example.marcello.tomadordefrequencia.model.Tomador;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     private DatabaseReference mDatabase;
     private String tomadorEmUso;
-    Tomador disciplinas = new Tomador();
+    Tomador disciplina = new Tomador();
     public static JSONObject db;
     Object db1;
 
@@ -41,6 +37,28 @@ public class MainActivity extends AppCompatActivity {
     Subject<Tomador> mObservable = PublishSubject.create();
     ArrayList<Tomador> arrDisciplinas = new ArrayList();
     private JSONObject fakeDb;
+    private String diaDaSemanaHoje;
+
+    private static final int segunda = 2;
+    private static final int terça= 3;
+    private static final int quarta = 4;
+    private static final long quinta = 5;
+    private static final int sexta = 6;
+    private static final int sábado = 7;
+    private static final int domingo = 8;
+
+
+    private static final String _DIASDASEMANA = "{" +
+                "segunda-feira:"+ segunda+ "," +
+                "terça-feira:"+ terça+ "," +
+                "quarta-feira:"+ quarta+ "," +
+                "quinta-feira:"+ quinta+ "," +
+                "sexta-feira:"+ sexta+ "," +
+                "sábado:"+ sábado+ "," +
+                "domingo:"+ domingo +
+            "}";
+    private JSONObject DIASDASEMANA;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,30 +66,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         tomadorEmUso = "cac209";
 
+        SimpleDateFormat date = new SimpleDateFormat("EEEE");
+//        Date d = new Date(2018, 05, 13);
+        Date d = new Date();
+        diaDaSemanaHoje = date.format(d);
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-//        try {
-//            fakeDb = new JSONObject(loadJSONFromAsset());
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-//        public String loadJSONFromAsset() {
-//            String json = null;
-//            try {
-//                InputStream is = this.getAssets().open("demo.json");
-//                int size = is.available();
-//                byte[] buffer = new byte[size];
-//                is.read(buffer);
-//                is.close();
-//                json = new String(buffer, "UTF-8");
-//            } catch (IOException ex) {
-//                ex.printStackTrace();
-//                return null;
-//            }
-//            return json;
+        try {
+            DIASDASEMANA = new JSONObject(_DIASDASEMANA);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+
+    }
 
 
     @Override
@@ -79,24 +87,8 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         pegaDisciplinas();
 
-
-
-
-
-
-
-
-        // pega as disciplinas do tomador
-//        try {
-//            Object tomadores = fakeDb.get("tomadores");
-//            tomador = tomadores.get(tomadorEmUso);
-//            disciplinas = (Tomador) tomador.get("disciplinas");
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
-        // verifica e seleciona qual disciplinas é de hoje
-            // se nao tem mostra tela que nao tem disciplinas hoje
+        // verifica e seleciona qual disciplina é de hoje
+            // se nao tem mostra tela que nao tem disciplina hoje
 
         // pega aulas
             // se nao tem mostra tela que nao tem aulas pra hoje
@@ -110,10 +102,10 @@ public class MainActivity extends AppCompatActivity {
         // acabou - checkin/checkout: fimDoProcesso
             // ao fim do checkout mostra a proxima aula ou que não mais aulas hoje
 
-        // professor clicou para entrar na disciplinas:
+        // professor clicou para entrar na disciplina:
             // inserirCodDisciplina
 
-        // mostrar informaçoes disciplinas:
+        // mostrar informaçoes disciplina:
 
         // liberar checkin pelo tablet:
 
@@ -130,12 +122,14 @@ public class MainActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
                         for (DataSnapshot ds: dataSnapshot.getChildren()){
-                            disciplinas = ds.getValue(Tomador.class);
-                            arrDisciplinas.add(disciplinas);
-                            pegaAulasDaDisciplina();
-
-                            Log.d("disciplinas", disciplinas.nome);
-                            Log.d("disciplinas", disciplinas.diasDaSemana);
+                            disciplina = ds.getValue(Tomador.class);
+                            if(verificaSeDisciplinaTemAulaHoje(disciplina)) {
+                                arrDisciplinas.add(disciplina);
+                                pegaAulasDaDisciplina();
+                            }else{
+                                TextView t = findViewById(R.id.readDataFromFirebase);
+                                t.setText("Não tem disciplinas pra hoje");
+                            }
                         }
                     }
 
@@ -144,6 +138,20 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("Log", "passou aqui");
                     }
                 });
+    }
+
+    private boolean verificaSeDisciplinaTemAulaHoje(Tomador disciplinaAtual) {
+        for (Object dia: ((ArrayList) disciplinaAtual.diasDaSemana)){
+            try {
+                if(dia.toString().equals(DIASDASEMANA.getString(diaDaSemanaHoje))){
+                    return true;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return false;
     }
 
     private void pegaAulasDaDisciplina() {
@@ -163,48 +171,4 @@ public class MainActivity extends AppCompatActivity {
                     });
         }
     }
-
-    public String dataHoje(String hora){
-            String momentoAtual = new Date().toString().replace(" ", "");
-            return momentoAtual; // assim nao vai dar certo. Arrumar forma de setar hora no new Date
-        }
-
-    }
-
-
-
-
-
-
-
-
-    /*
-    * mDatabase = FirebaseDatabase.getInstance().getReference();
-        ValueEventListener pegaDisciplinas = mDatabase.child("tomadores").child(tomadorEmUso).child("disciplinas").
-        addValueEventListener(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                for (DataSnapshot ds: dataSnapshot.getChildren()){
-                    disciplinas = ds.getValue(Tomador.class);
-                    arrDisciplinas.add(disciplinas);
-
-                    Log.d("disciplinas", disciplinas.nome);
-                    Log.d("disciplinas", disciplinas.diasDaSemana);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("Log", "passou aqui");
-            }
-        });
-
-
-        * Quando a aplicao iniciar no tablet tem haver algum tipo de: fakeLoginTomador("cac209")
-        * Onde ao iniciar meio que o tablet diz: Olá, eu sou o tomador de id cac209.
-        *
-
-
-    */
+}
