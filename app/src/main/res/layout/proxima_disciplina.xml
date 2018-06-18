@@ -29,7 +29,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <TextView
-        android:id="@+id/titulo"
+        android:id="@+id/nomeDaDisciplina"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -38,11 +38,18 @@
         android:layout_marginLeft="26dp"
         android:layout_marginStart="26dp"
         android:layout_marginTop="42dp"
-        android:text="Essa é a próxima disciplina"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="36sp" />
 
-
+    <TextView
+        android:id="@+id/nomeDoProfessor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/nomeDaDisciplina"
+        android:layout_alignStart="@+id/nomeDaDisciplina"
+        android:layout_below="@+id/nomeDaDisciplina"
+        android:layout_marginTop="24dp"
+        android:textSize="24sp" />
 
 
 </RelativeLayout>

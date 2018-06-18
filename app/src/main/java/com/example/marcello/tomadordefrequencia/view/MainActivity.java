@@ -179,6 +179,8 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
             if(proximaDisciplina.codigo != null) {
                 Intent intent = new Intent(this, ProximaDisciplina.class);
                 intent.putExtra("DISCIPLINA_CODIGO", proximaDisciplina.codigo);
+                intent.putExtra("DISCIPLINA_NOME", proximaDisciplina.nome);
+                intent.putExtra("DISCIPLINA_NOME_PROFESSOR", proximaDisciplina.nomeProfessor);
                 startActivity(intent);
                 finish();
             } else {
