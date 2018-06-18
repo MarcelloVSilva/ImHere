@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class Tomador implements Serializable {
     public String codigo;
     public Object diasDaSemana;
-    public String horarioDeInicioAula;
+    public Object horarioDeInicioAula;
     public String nome;
     public String nomeProfessor;
 
@@ -21,7 +21,7 @@ public class Tomador implements Serializable {
 
     }
 
-    public Tomador(String codigo, ArrayList diasDaSemana, String horarioDeInicioAula, String nome, String nomeProfessor) {
+    public Tomador(String codigo, ArrayList diasDaSemana, Object horarioDeInicioAula, String nome, String nomeProfessor) {
         this.codigo = codigo;
         this.diasDaSemana = diasDaSemana;
         this.horarioDeInicioAula = horarioDeInicioAula;

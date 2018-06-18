@@ -1,11 +1,13 @@
 package com.example.marcello.tomadordefrequencia.view;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.TextView;
 
-import com.example.marcello.tomadordefrequencia.R;
+import com.example.marcello.tomadordefrequencia.componentes.telas.NaoTemMaisDisciplinaHoje;
+import com.example.marcello.tomadordefrequencia.componentes.telas.ProximaDisciplina;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -16,16 +18,16 @@ import com.example.marcello.tomadordefrequencia.model.Tomador;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-
+import java.util.HashMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
+import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinasParaHoje;
 
-public class MainActivity extends AppCompatActivity {
+    public class MainActivity extends AppCompatActivity {
 
     private DatabaseReference mDatabase;
     private String tomadorEmUso;
@@ -33,8 +35,6 @@ public class MainActivity extends AppCompatActivity {
     public static JSONObject db;
     Object db1;
 
-
-    Subject<Tomador> mObservable = PublishSubject.create();
     ArrayList<Tomador> arrDisciplinas = new ArrayList();
     private JSONObject fakeDb;
     private String diaDaSemanaHoje;
@@ -58,18 +58,20 @@ public class MainActivity extends AppCompatActivity {
                 "domingo:"+ domingo +
             "}";
     private JSONObject DIASDASEMANA;
+        private Date diaHoraAtual;
 
 
-    @Override
+        @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+//        setContentView(R.layout.activity_main);
         tomadorEmUso = "cac209";
 
         SimpleDateFormat date = new SimpleDateFormat("EEEE");
-//        Date d = new Date(2018, 05, 13);
-        Date d = new Date();
-        diaDaSemanaHoje = date.format(d);
+//        diaHoraAtual = new Date(2018, 05, 13);
+        diaHoraAtual = new Date();
+        diaDaSemanaHoje = date.format(diaHoraAtual);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -81,11 +83,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
         pegaDisciplinas();
+
+        ProgressDialog dialog = ProgressDialog.show(this, "",
+                "Carregando disciplinas...", true);
 
         // verifica e seleciona qual disciplina é de hoje
             // se nao tem mostra tela que nao tem disciplina hoje
@@ -120,16 +124,20 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-
+                        Tomador proximaDisciplina;
+                        arrDisciplinas.clear();
+                        int ultimaVez = 1;
+                        Long contador = dataSnapshot.getChildrenCount();
                         for (DataSnapshot ds: dataSnapshot.getChildren()){
                             disciplina = ds.getValue(Tomador.class);
                             if(verificaSeDisciplinaTemAulaHoje(disciplina)) {
                                 arrDisciplinas.add(disciplina);
-                                pegaAulasDaDisciplina();
-                            }else{
-                                TextView t = findViewById(R.id.readDataFromFirebase);
-                                t.setText("Não tem disciplinas pra hoje");
+                            }else if(contador == ultimaVez) {
+                                if (!arrDisciplinas.isEmpty()) {
+                                    intentDaProximaDisciplina();
+                                } else abreIntentSemResultado();
                             }
+                            contador--;
                         }
                     }
 
@@ -140,7 +148,47 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private boolean verificaSeDisciplinaTemAulaHoje(Tomador disciplinaAtual) {
+        private void intentDaProximaDisciplina() {
+            Calendar horarioDisciplina = Calendar.getInstance();
+
+            Tomador proximaDisciplina = new Tomador();
+            long aulaMaisProxima = 0;
+            String horarioDeInicioAula= null;
+
+            for (Tomador disciplina: arrDisciplinas) {
+                try {
+                    horarioDeInicioAula = (String) ((HashMap) disciplina.horarioDeInicioAula).get(DIASDASEMANA.get(diaDaSemanaHoje).toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                int horas = Integer.parseInt(horarioDeInicioAula.substring(0,2));
+                int minutos = Integer.parseInt(horarioDeInicioAula.substring(3,5));
+
+                horarioDisciplina.set(Calendar.HOUR, horas);
+                horarioDisciplina.set(Calendar.MINUTE, minutos);
+
+                long horarioDisciplinaEmMili = horarioDisciplina.getTimeInMillis();
+
+                if(horarioDisciplinaEmMili > diaHoraAtual.getTime() && (horarioDisciplinaEmMili < aulaMaisProxima || aulaMaisProxima ==0)){
+                    proximaDisciplina = disciplina;
+                    aulaMaisProxima = horarioDisciplinaEmMili;
+                }
+//                if(arrDisciplinas.getTime() - )
+            }
+            if(proximaDisciplina.codigo != null) {
+                Intent intent = new Intent(this, ProximaDisciplina.class);
+                intent.putExtra("DISCIPLINA_CODIGO", proximaDisciplina.codigo);
+                startActivity(intent);
+                finish();
+            } else {
+                Intent intent = new Intent(this, NaoTemMaisDisciplinaHoje.class);
+                startActivity(intent);
+                finish();
+            }
+        }
+
+        private boolean verificaSeDisciplinaTemAulaHoje(Tomador disciplinaAtual) {
         for (Object dia: ((ArrayList) disciplinaAtual.diasDaSemana)){
             try {
                 if(dia.toString().equals(DIASDASEMANA.getString(diaDaSemanaHoje))){
@@ -154,21 +202,9 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    private void pegaAulasDaDisciplina() {
-        for(Tomador disciplina : arrDisciplinas) {
-            mDatabase.child("/disciplinas/"+disciplina.codigo).
-                    addValueEventListener(new ValueEventListener() {
-
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Log.d("Log", "passou");
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Log.d("Log", "passou aqui");
-                        }
-                    });
-        }
+    private void abreIntentSemResultado(){
+        Intent intent = new Intent(this, SemDisciplinasParaHoje.class);
+        startActivity(intent);
+        finish();
     }
 }
