@@ -121,33 +121,31 @@ public class ProximaDisciplina extends AppCompatActivity {
                 addValueEventListener(new ValueEventListener() {
 
                     Aula dsAula = new Aula();
-                    FragmentTransaction ft = getFragmentManager().beginTransaction();
                     Fragment emProcesso = new EmProcessoAula();
-                    TextView statusAulaField = findViewById(R.id.statusAula);
+
+                    Fragment fimDoProcesso = new FimDoProcesso();
+                    Fragment aindaNaoComecou = new AindaNaoComecou();
 
                       @Override
                       public void onDataChange(DataSnapshot dataSnapshot) {
+                          FragmentTransaction ft = getFragmentManager().beginTransaction();
                           dsAula = dataSnapshot.getValue(Aula.class);
                           Object checkin = dsAula.checkin;
                           Object aux = ((HashMap) checkin).get("status");
                           int statusAula = ((Long) aux).intValue();
                           switch(statusAula) {
-                              case 0:
-                                  //ainda nao comecou
-                                  ft.remove(emProcesso);
-//                                  statusAulaField.setText("Checkin ainda não começou");
+                              case 0: //ainda nao comecou
+                                  ft.replace(android.R.id.content, aindaNaoComecou);
                                   break;
-                              case 1:
-                                  //em andamento
-                                  ft.add(android.R.id.content, emProcesso).commit();
+                              case 1: //em andamento
+                                  ft.replace(android.R.id.content, emProcesso);
                                   break;
-                              case 2:
-                                  ft.remove(emProcesso);
-//                                  statusAulaField.setText("Checkin já terminou");
+                              case 2: //encerrado
+                                  ft.replace(android.R.id.content, fimDoProcesso);
                                   break;
-                                  //encerrado
-                              default: ft.remove(emProcesso);
                           }
+                          ft.addToBackStack(null);
+                          ft.commitAllowingStateLoss();
                       }
 
 
