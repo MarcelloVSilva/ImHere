@@ -100,7 +100,7 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
 
         // mostra a proxima aula do dia para esse tomador
 
-        // checkin/checkout: emProcesso
+        // checkin/checkout: EmProcesso
             // lerCartao/inserirMatricula
                 // ao identificar aluno: identificarAlunoNegativo/identificarAlunoPositivo
 

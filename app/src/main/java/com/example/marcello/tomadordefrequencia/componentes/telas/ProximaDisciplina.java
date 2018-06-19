@@ -1,5 +1,7 @@
 package com.example.marcello.tomadordefrequencia.componentes.telas;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -66,37 +68,37 @@ public class ProximaDisciplina extends AppCompatActivity {
     }
 
     private void pegaAulasDaDisciplina() {
-        mDatabase.child("/disciplinas/"+COD_DISCIPLINA_ATUAL+"/aulas/"+ ANO+"/"+MES+"/"+DIA).
-                addValueEventListener(new ValueEventListener() {
+        mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA).
+                addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Aula proximaAula = new Aula();
-                        proximaAula =null;
+                        proximaAula = null;
                         int ultimaVez = 1;
                         Long contador = dataSnapshot.getChildrenCount();
                         long milisDaProximaAula = 0;
                         String idDaProximaAula = new String();
 
-                        for(DataSnapshot ds: dataSnapshot.getChildren()){
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
                             aula = ds.getValue(Aula.class);
 
                             Calendar horarioDisciplina = Calendar.getInstance();
                             String horarioDeInicioAula = (String) ((HashMap) aula.hora).get("fim");
-                            int horas = Integer.parseInt(horarioDeInicioAula.substring(0,2));
-                            int minutos = Integer.parseInt(horarioDeInicioAula.substring(3,5));
+                            int horas = Integer.parseInt(horarioDeInicioAula.substring(0, 2));
+                            int minutos = Integer.parseInt(horarioDeInicioAula.substring(3, 5));
 
                             horarioDisciplina.set(Calendar.HOUR_OF_DAY, horas);
                             horarioDisciplina.set(Calendar.MINUTE, minutos);
 
                             long horarioDisciplinaEmMili = horarioDisciplina.getTimeInMillis();
 
-                            if(proximaAula == null || (horarioDisciplinaEmMili < milisDaProximaAula && milisDaProximaAula > 0)){
+                            if (proximaAula == null || (horarioDisciplinaEmMili < milisDaProximaAula && milisDaProximaAula > 0)) {
                                 proximaAula = aula;
                                 idDaProximaAula = ds.getKey();
                                 horaQueComecaProximaAula = (String) ((HashMap) aula.hora).get("inicio");
                                 milisDaProximaAula = horarioDisciplinaEmMili;
                             }
-                            if(contador == ultimaVez && proximaAula != null){
+                            if (contador == ultimaVez && proximaAula != null) {
                                 TextView hora = findViewById(R.id.horaProximaAula);
                                 hora.setText(horaQueComecaProximaAula);
                                 controlaStatusDaAula(idDaProximaAula);
@@ -117,25 +119,34 @@ public class ProximaDisciplina extends AppCompatActivity {
     private void controlaStatusDaAula(String aula) {
         mDatabase.child("/disciplinas/"+COD_DISCIPLINA_ATUAL+"/aulas/"+ ANO+"/"+MES+"/"+DIA+"/"+aula).
                 addValueEventListener(new ValueEventListener() {
+
                     Aula dsAula = new Aula();
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    Fragment emProcesso = new EmProcessoAula();
                     TextView statusAulaField = findViewById(R.id.statusAula);
+
                       @Override
                       public void onDataChange(DataSnapshot dataSnapshot) {
                           dsAula = dataSnapshot.getValue(Aula.class);
                           Object checkin = dsAula.checkin;
                           Object aux = ((HashMap) checkin).get("status");
                           int statusAula = ((Long) aux).intValue();
-
                           switch(statusAula) {
-                              case 0: //ainda nao comecou
-                                  statusAulaField.setText("Checkin ainda não começou");
+                              case 0:
+                                  //ainda nao comecou
+                                  ft.remove(emProcesso);
+//                                  statusAulaField.setText("Checkin ainda não começou");
                                   break;
-                              case 1: //em andamento
-                                  statusAulaField.setText("Checkin rolando");
+                              case 1:
+                                  //em andamento
+                                  ft.add(android.R.id.content, emProcesso).commit();
                                   break;
-                              case 2: //encerrado
-                                  statusAulaField.setText("Checkin já terminou");
+                              case 2:
+                                  ft.remove(emProcesso);
+//                                  statusAulaField.setText("Checkin já terminou");
                                   break;
+                                  //encerrado
+                              default: ft.remove(emProcesso);
                           }
                       }
 
