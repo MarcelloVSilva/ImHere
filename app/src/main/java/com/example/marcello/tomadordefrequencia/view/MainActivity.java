@@ -58,7 +58,8 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
                 "domingo:"+ domingo +
             "}";
     private JSONObject DIASDASEMANA;
-        private Date diaHoraAtual;
+    private Date diaHoraAtual;
+    private ProgressDialog dialog;
 
 
         @Override
@@ -88,7 +89,7 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
         super.onStart();
         pegaDisciplinas();
 
-        ProgressDialog dialog = ProgressDialog.show(this, "",
+        dialog = ProgressDialog.show(this, "",
                 "Carregando disciplinas...", true);
 
         // verifica e seleciona qual disciplina é de hoje
@@ -157,6 +158,7 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
 
             for (Tomador disciplina: arrDisciplinas) {
                 try {
+//                    horarioDeInicioAula = (String) ((ArrayList) disciplina.horarioDeInicioAula).get((Integer) DIASDASEMANA.get(diaDaSemanaHoje));
                     horarioDeInicioAula = (String) ((HashMap) disciplina.horarioDeInicioAula).get(DIASDASEMANA.get(diaDaSemanaHoje).toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -165,7 +167,7 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
                 int horas = Integer.parseInt(horarioDeInicioAula.substring(0,2));
                 int minutos = Integer.parseInt(horarioDeInicioAula.substring(3,5));
 
-                horarioDisciplina.set(Calendar.HOUR, horas);
+                horarioDisciplina.set(Calendar.HOUR_OF_DAY, horas);
                 horarioDisciplina.set(Calendar.MINUTE, minutos);
 
                 long horarioDisciplinaEmMili = horarioDisciplina.getTimeInMillis();
@@ -174,14 +176,15 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
                     proximaDisciplina = disciplina;
                     aulaMaisProxima = horarioDisciplinaEmMili;
                 }
-//                if(arrDisciplinas.getTime() - )
             }
+
             if(proximaDisciplina.codigo != null) {
                 Intent intent = new Intent(this, ProximaDisciplina.class);
                 intent.putExtra("DISCIPLINA_CODIGO", proximaDisciplina.codigo);
                 intent.putExtra("DISCIPLINA_NOME", proximaDisciplina.nome);
                 intent.putExtra("DISCIPLINA_NOME_PROFESSOR", proximaDisciplina.nomeProfessor);
                 startActivity(intent);
+                dialog.cancel();
                 finish();
             } else {
                 Intent intent = new Intent(this, NaoTemMaisDisciplinaHoje.class);

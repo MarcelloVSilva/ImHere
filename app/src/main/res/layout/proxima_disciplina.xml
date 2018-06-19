@@ -37,7 +37,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="26dp"
         android:layout_marginStart="26dp"
-        android:layout_marginTop="42dp"
+        android:layout_marginTop="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="36sp" />
 
@@ -48,8 +48,40 @@
         android:layout_alignLeft="@+id/nomeDaDisciplina"
         android:layout_alignStart="@+id/nomeDaDisciplina"
         android:layout_below="@+id/nomeDaDisciplina"
-        android:layout_marginTop="24dp"
+        android:text="aqiu"
         android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/proximaAula"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/my_toolbar"
+        android:layout_alignLeft="@+id/nomeDaDisciplina"
+        android:layout_alignStart="@+id/nomeDaDisciplina"
+        android:text="Próxima aula"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/horaProximaAula"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/my_toolbar"
+        android:layout_marginLeft="81dp"
+        android:layout_marginStart="81dp"
+        android:layout_toEndOf="@+id/proximaAula"
+        android:layout_toRightOf="@+id/proximaAula"
+        android:text="TextView"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/statusAula"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/my_toolbar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="102dp"
+        android:text="STATUS"
+        android:textSize="36sp" />
 
 
 </RelativeLayout>

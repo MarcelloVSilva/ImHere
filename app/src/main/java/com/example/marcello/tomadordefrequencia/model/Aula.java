@@ -1,27 +1,29 @@
 package com.example.marcello.tomadordefrequencia.model;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 
 /**
  * Created by marcello on 6/12/18.
  */
 
-public class Aula {
+public class Aula implements Serializable {
+    public Object hora;
     public String data;
-    public String hora;
     public String sala;
-    public Array checkin;
+    public Object checkin;
+    public Object checkout;
 
-    public Aula(String data, String hora, String sala, Array checkin, Array checkout) {
-        this.data = data;
+    public Aula(){
+
+    }
+
+    public Aula(String data, String hora, String sala, Object checkin, Object checkout) {
         this.hora = hora;
+        this.data = data;
         this.sala = sala;
         this.checkin = checkin;
         this.checkout = checkout;
     }
 
-    public Array checkout;
-
-    public Aula() {
-    }
 }
