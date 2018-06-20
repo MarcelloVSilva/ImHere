@@ -58,7 +58,7 @@
         android:layout_alignBottom="@+id/my_toolbar"
         android:layout_alignLeft="@+id/nomeDaDisciplina"
         android:layout_alignStart="@+id/nomeDaDisciplina"
-        android:text="Próxima aula"
+        android:text="Horário da aula"
         android:textSize="24sp" />
 
     <TextView
@@ -70,7 +70,6 @@
         android:layout_marginStart="81dp"
         android:layout_toEndOf="@+id/proximaAula"
         android:layout_toRightOf="@+id/proximaAula"
-        android:text="TextView"
         android:textSize="24sp" />
 
     <RelativeLayout
@@ -82,14 +81,5 @@
         android:layout_below="@+id/my_toolbar">
 
     </RelativeLayout>
-
-    <!--<fragment-->
-        <!--android:id="@+id/fragmentEmProcesso"-->
-        <!--android:name="com.example.marcello.tomadordefrequencia.componentes.telas.EmProcessoAula"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_centerVertical="true" />-->
-
 
 </RelativeLayout>

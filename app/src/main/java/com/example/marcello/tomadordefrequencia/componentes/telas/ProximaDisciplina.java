@@ -128,20 +128,51 @@ public class ProximaDisciplina extends AppCompatActivity {
 
                       @Override
                       public void onDataChange(DataSnapshot dataSnapshot) {
+                          Bundle bundle = new Bundle();
+
+                          emProcesso.setArguments(bundle);
+                          fimDoProcesso.setArguments(bundle);
+
                           FragmentTransaction ft = getFragmentManager().beginTransaction();
                           dsAula = dataSnapshot.getValue(Aula.class);
+
                           Object checkin = dsAula.checkin;
                           Object aux = ((HashMap) checkin).get("status");
-                          int statusAula = ((Long) aux).intValue();
-                          switch(statusAula) {
+                          int statusAulaCheckin = ((Long) aux).intValue();
+
+                          Object checkout = dsAula.checkout;
+                          Object aux2 = ((HashMap) checkout).get("status");
+                          int statusAulaCheckout = ((Long) aux2).intValue();
+
+                          switch(statusAulaCheckin) {
                               case 0: //ainda nao comecou
+                                  bundle.putString("checkinOuCheckout", "checkin");
+                                  aindaNaoComecou.setArguments(bundle);
                                   ft.replace(R.id.espaçoParaColocarFragment, aindaNaoComecou);
                                   break;
                               case 1: //em andamento
+                                  bundle.putString("checkinOuCheckout", "checkin");
+                                  emProcesso.setArguments(bundle);
                                   ft.replace(R.id.espaçoParaColocarFragment, emProcesso);
                                   break;
                               case 2: //encerrado
-                                  ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso);
+                                  switch (statusAulaCheckout){
+                                      case 0:
+                                          bundle.putString("checkinOuCheckout", "checkin");
+                                          fimDoProcesso.setArguments(bundle);
+                                          ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso);
+                                          break;
+                                      case 1:
+                                          bundle.putString("checkinOuCheckout", "checkout");
+                                          emProcesso.setArguments(bundle);
+                                          ft.replace(R.id.espaçoParaColocarFragment, emProcesso);
+                                          break;
+                                      case 2:
+                                          bundle.putString("checkinOuCheckout", "checkout");
+                                          fimDoProcesso.setArguments(bundle);
+                                          ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso);
+                                          break;
+                                  }
                                   break;
                           }
                           ft.addToBackStack(null);

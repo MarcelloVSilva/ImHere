@@ -133,7 +133,8 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
                             disciplina = ds.getValue(Tomador.class);
                             if(verificaSeDisciplinaTemAulaHoje(disciplina)) {
                                 arrDisciplinas.add(disciplina);
-                            }else if(contador == ultimaVez) {
+                            }
+                            if(contador == ultimaVez) {
                                 if (!arrDisciplinas.isEmpty()) {
                                     intentDaProximaDisciplina();
                                 } else abreIntentSemResultado();
@@ -158,8 +159,10 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
 
             for (Tomador disciplina: arrDisciplinas) {
                 try {
-//                    horarioDeInicioAula = (String) ((ArrayList) disciplina.horarioDeInicioAula).get((Integer) DIASDASEMANA.get(diaDaSemanaHoje));
-                    horarioDeInicioAula = (String) ((HashMap) disciplina.horarioDeInicioAula).get(DIASDASEMANA.get(diaDaSemanaHoje).toString());
+                    if(disciplina.horarioDeInicioAula instanceof ArrayList)
+                        horarioDeInicioAula = (String) ((ArrayList) disciplina.horarioDeInicioAula).get((Integer) DIASDASEMANA.get(diaDaSemanaHoje));
+                    else if(disciplina.horarioDeInicioAula instanceof HashMap)
+                        horarioDeInicioAula = (String) ((HashMap) disciplina.horarioDeInicioAula).get(DIASDASEMANA.get(diaDaSemanaHoje).toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
