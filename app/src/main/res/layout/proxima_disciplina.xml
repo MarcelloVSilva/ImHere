@@ -73,6 +73,16 @@
         android:text="TextView"
         android:textSize="24sp" />
 
+    <RelativeLayout
+        android:id="@+id/espaçoParaColocarFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/my_toolbar">
+
+    </RelativeLayout>
+
     <!--<fragment-->
         <!--android:id="@+id/fragmentEmProcesso"-->
         <!--android:name="com.example.marcello.tomadordefrequencia.componentes.telas.EmProcessoAula"-->

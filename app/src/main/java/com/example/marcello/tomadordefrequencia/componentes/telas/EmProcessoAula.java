@@ -6,11 +6,11 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-
+import android.widget.Button;
 import com.example.marcello.tomadordefrequencia.R;
 
 public class EmProcessoAula extends Fragment {
@@ -19,6 +19,16 @@ public class EmProcessoAula extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.em_processo_fragment, container, false);
+        Button button = view.findViewById(R.id.inserirMatricula);
+        button.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Log.d("MATRICULA", "inserir matricula");
+                // abrir: teclado, campo e botao de enviar
+            }
+        });
         return view;
     }
 }

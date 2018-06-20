@@ -135,13 +135,13 @@ public class ProximaDisciplina extends AppCompatActivity {
                           int statusAula = ((Long) aux).intValue();
                           switch(statusAula) {
                               case 0: //ainda nao comecou
-                                  ft.replace(android.R.id.content, aindaNaoComecou);
+                                  ft.replace(R.id.espaçoParaColocarFragment, aindaNaoComecou);
                                   break;
                               case 1: //em andamento
-                                  ft.replace(android.R.id.content, emProcesso);
+                                  ft.replace(R.id.espaçoParaColocarFragment, emProcesso);
                                   break;
                               case 2: //encerrado
-                                  ft.replace(android.R.id.content, fimDoProcesso);
+                                  ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso);
                                   break;
                           }
                           ft.addToBackStack(null);
