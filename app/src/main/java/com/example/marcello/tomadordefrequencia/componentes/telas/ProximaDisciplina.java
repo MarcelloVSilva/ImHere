@@ -2,10 +2,18 @@ package com.example.marcello.tomadordefrequencia.componentes.telas;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.app.PendingIntent;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.marcello.tomadordefrequencia.R;
 import com.example.marcello.tomadordefrequencia.model.Aula;
@@ -15,6 +23,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,12 +46,17 @@ public class ProximaDisciplina extends AppCompatActivity {
     private String horaQueComecaProximaAula = new String();
 
     Aula aula = new Aula();
+    private DialogInterface dialog;
 
+    NfcAdapter nfcAdapter;
+    Boolean podeLerNfcAgora;
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.proxima_disciplina);
+        podeLerNfcAgora = false;
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
 //        Date date = new Date(2018, 04, 03);
         Date date = new Date();
@@ -60,6 +77,9 @@ public class ProximaDisciplina extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        dialog = ProgressDialog.show(this, "",
+                "Carregando aula", true);
+
         TextView nomeDisciplina = findViewById(R.id.nomeDaDisciplina);
         TextView nomeProfessor = findViewById(R.id.nomeDoProfessor);
         nomeDisciplina.setText(NOME_DISCIPLINA_ATUAL);
@@ -147,11 +167,13 @@ public class ProximaDisciplina extends AppCompatActivity {
                           switch(statusAulaCheckin) {
                               case 0: //ainda nao comecou
                                   bundle.putString("checkinOuCheckout", "checkin");
+                                  podeLerNfcAgora = false;
                                   aindaNaoComecou.setArguments(bundle);
                                   ft.replace(R.id.espaçoParaColocarFragment, aindaNaoComecou);
                                   break;
                               case 1: //em andamento
                                   bundle.putString("checkinOuCheckout", "checkin");
+                                  podeLerNfcAgora = true;
                                   emProcesso.setArguments(bundle);
                                   ft.replace(R.id.espaçoParaColocarFragment, emProcesso);
                                   break;
@@ -159,16 +181,19 @@ public class ProximaDisciplina extends AppCompatActivity {
                                   switch (statusAulaCheckout){
                                       case 0:
                                           bundle.putString("checkinOuCheckout", "checkin");
+                                          podeLerNfcAgora = false;
                                           fimDoProcesso.setArguments(bundle);
                                           ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso);
                                           break;
                                       case 1:
                                           bundle.putString("checkinOuCheckout", "checkout");
+                                          podeLerNfcAgora = true;
                                           emProcesso.setArguments(bundle);
                                           ft.replace(R.id.espaçoParaColocarFragment, emProcesso);
                                           break;
                                       case 2:
                                           bundle.putString("checkinOuCheckout", "checkout");
+                                          podeLerNfcAgora = false;
                                           fimDoProcesso.setArguments(bundle);
                                           ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso);
                                           break;
@@ -177,14 +202,61 @@ public class ProximaDisciplina extends AppCompatActivity {
                           }
                           ft.addToBackStack(null);
                           ft.commitAllowingStateLoss();
+                          dialog.cancel();
                       }
 
 
                       @Override
-                      public void onCancelled(DatabaseError databaseError) {
-                          Log.d("Log", "passou aqui");
-                      }
+                      public void onCancelled(DatabaseError databaseError) {}
                                       });
-//        ligacao com o banco, fica observando os objetos checkin e checkout da aula
     }
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if(!podeLerNfcAgora) {
+            Toast.makeText(this, "Não está na hora", Toast.LENGTH_LONG).show();
+            return;
+        }
+        Toast.makeText(this, "Agora sim", Toast.LENGTH_LONG).show();
+        try {
+            getTagInfo(intent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        super.onNewIntent(intent);
+    }
+
+    private void getTagInfo(Intent intent) throws IOException, JSONException {
+        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        byte[] idStudent = tag.getId();
+//        registraPresencaParaAluno(idStudent);
+    }
+
+
+    @Override
+    protected void onResume(){
+
+        Intent intent = new Intent(this, ProximaDisciplina.class);
+        intent.addFlags(Intent.FLAG_RECEIVER_REPLACE_PENDING);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                0, intent, 0);
+        IntentFilter[] intentFilter = new IntentFilter[] {};
+
+        nfcAdapter.enableForegroundDispatch(this, pendingIntent, intentFilter, null);
+        super.onResume();
+    }
+    //
+    @Override
+    protected void onPause(){
+        nfcAdapter.disableForegroundDispatch(this);
+        super.onPause();
+    }
+
+
+
+
 }

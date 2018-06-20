@@ -1,8 +1,11 @@
 package com.example.marcello.tomadordefrequencia.view;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -88,6 +91,7 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
     public void onStart() {
         super.onStart();
         pegaDisciplinas();
+
 
         dialog = ProgressDialog.show(this, "",
                 "Carregando disciplinas...", true);
