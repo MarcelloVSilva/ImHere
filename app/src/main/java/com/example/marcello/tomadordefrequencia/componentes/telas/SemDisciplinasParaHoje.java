@@ -13,6 +13,6 @@ public class SemDisciplinasParaHoje extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.sem_disciplinas_para_hoje);
+        setContentView(R.layout.nao_tem_mais_disciplinas_para_hoje);
     }
 }

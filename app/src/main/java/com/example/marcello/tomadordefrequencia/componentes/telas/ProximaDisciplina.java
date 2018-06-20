@@ -16,6 +16,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.marcello.tomadordefrequencia.R;
+import com.example.marcello.tomadordefrequencia.componentes.telas.fragments.AindaNaoComecou;
+import com.example.marcello.tomadordefrequencia.componentes.telas.fragments.EmProcessoAula;
+import com.example.marcello.tomadordefrequencia.componentes.telas.fragments.FimDoProcesso;
+import com.example.marcello.tomadordefrequencia.componentes.telas.fragments.SemAulasHojeParaDisciplina;
 import com.example.marcello.tomadordefrequencia.model.Aula;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,7 +27,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -89,7 +92,7 @@ public class ProximaDisciplina extends AppCompatActivity {
 
     private void pegaAulasDaDisciplina() {
         mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA).
-                addListenerForSingleValueEvent(new ValueEventListener() {
+                addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Aula proximaAula = new Aula();
@@ -125,7 +128,15 @@ public class ProximaDisciplina extends AppCompatActivity {
                             }
                             contador--;
                         }
-                        //mostrar que nao tem aulas cadastradas para hoje
+                        if(proximaAula == null){
+                            FragmentTransaction ft = getFragmentManager().beginTransaction();
+                            Fragment semAula = new SemAulasHojeParaDisciplina();
+                            ft.replace(R.id.espaçoParaColocarFragment, semAula);
+                            ft.commitAllowingStateLoss();
+                            dialog.cancel();
+                        }
+                        // Chamar fragment com avisando que nao tem aula
+                        // mostrar que nao tem aulas cadastradas para hoje
                     }
 
                     @Override
@@ -150,8 +161,8 @@ public class ProximaDisciplina extends AppCompatActivity {
                       public void onDataChange(DataSnapshot dataSnapshot) {
                           Bundle bundle = new Bundle();
 
-                          emProcesso.setArguments(bundle);
-                          fimDoProcesso.setArguments(bundle);
+//                          emProcesso.setArguments(bundle);
+//                          fimDoProcesso.setArguments(bundle);
 
                           FragmentTransaction ft = getFragmentManager().beginTransaction();
                           dsAula = dataSnapshot.getValue(Aula.class);
@@ -249,14 +260,11 @@ public class ProximaDisciplina extends AppCompatActivity {
         nfcAdapter.enableForegroundDispatch(this, pendingIntent, intentFilter, null);
         super.onResume();
     }
-    //
+
     @Override
     protected void onPause(){
         nfcAdapter.disableForegroundDispatch(this);
         super.onPause();
     }
-
-
-
 
 }
