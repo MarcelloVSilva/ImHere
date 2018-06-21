@@ -96,21 +96,6 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
         dialog = ProgressDialog.show(this, "",
                 "Carregando disciplinas...", true);
 
-        // verifica e seleciona qual disciplina é de hoje
-            // se nao tem mostra tela que nao tem disciplina hoje
-
-        // pega aulas
-            // se nao tem mostra tela que nao tem aulas pra hoje
-
-        // mostra a proxima aula do dia para esse tomador
-
-        // checkin/checkout:
-            // lerCartao/inserirMatricula
-                // ao identificar aluno: identificarAlunoNegativo/identificarAlunoPositivo
-
-        // acabou - checkin/checkout:
-            // ao fim do checkout mostra a proxima aula ou que não mais aulas hoje
-
         // professor clicou para entrar na disciplina:
             // inserirCodDisciplina
 
