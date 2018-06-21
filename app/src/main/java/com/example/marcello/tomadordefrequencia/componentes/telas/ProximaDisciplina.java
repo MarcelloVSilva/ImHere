@@ -13,6 +13,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,6 +80,15 @@ public class ProximaDisciplina extends AppCompatActivity {
         COD_DISCIPLINA_ATUAL = getIntent().getStringExtra("DISCIPLINA_CODIGO");
         NOME_DISCIPLINA_ATUAL = getIntent().getStringExtra("DISCIPLINA_NOME");
         NOME_PROFESSOR_DISCIPLINA_ATUAL = getIntent().getStringExtra("DISCIPLINA_NOME_PROFESSOR");
+
+        ImageButton loginProfessorFragment = findViewById(R.id.loginProfessor);
+        final Intent inputIntent = new Intent(this, InputEdit.class);
+
+        loginProfessorFragment.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+                startActivity(inputIntent);
+            }
+        });
 
     }
 

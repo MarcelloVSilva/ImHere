@@ -17,15 +17,16 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbarTomador"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="1dp"
             app:layout_collapseMode="pin"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
 
         <RelativeLayout
+            android:id="@+id/relative"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="200sp"
             android:padding="16dp">
 
             <TextView
@@ -33,6 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="0dp"
+                android:layout_below="@id/loginProfessor"
                 android:text="nome"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textSize="36sp" />
@@ -47,9 +49,9 @@
 
             <TextView
                 android:id="@+id/proximaAula"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/nomeDoProfessor"
+                android:layout_alignParentBottom="true"
                 android:text="Horário da aula"
                 android:textSize="24sp" />
 
@@ -57,27 +59,33 @@
                 android:id="@+id/horaProximaAula"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginEnd="53dp"
-                android:layout_marginRight="53dp"
-                android:layout_marginTop="155dp"
+                android:layout_alignBaseline="@id/proximaAula"
+                android:layout_alignRight="@id/proximaAula"
                 android:text="14:00"
                 android:textSize="24sp" />
 
+            <ImageButton
+                android:id="@+id/loginProfessor"
+                android:layout_width="25sp"
+                android:layout_height="30sp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                app:srcCompat="@drawable/sem_aulas" />
+
         </RelativeLayout>
+
+
 
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout
-        android:id="@+id/espaçoParaColocarFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
 
-    </RelativeLayout>
+        <FrameLayout
+            android:id="@+id/espaçoParaColocarFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/app_bar_layout">
+
+        </FrameLayout>
 
 </RelativeLayout>
