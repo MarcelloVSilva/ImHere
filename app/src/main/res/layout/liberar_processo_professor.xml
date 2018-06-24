@@ -15,12 +15,14 @@
         android:background="@color/blueTomador"
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbarTomador"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             app:layout_collapseMode="pin"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
 
 
         <RelativeLayout
@@ -40,60 +42,126 @@
                 android:layout_alignParentTop="true"
                 app:srcCompat="?attr/actionModeCloseDrawable" />
 
+            <TextView
+                android:id="@+id/nomeDaDisciplina"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30sp"
+                android:layout_below="@id/imageButtonBackFinishAct"
+                android:text="nome"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textSize="36sp" />
+
+            <TextView
+                android:id="@+id/nomeDoProfessor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/nomeDaDisciplina"
+                android:text="aqui"
+                android:textSize="24sp" />
+
+
         </RelativeLayout>
 
 
 
     </android.support.design.widget.AppBarLayout>
-    <!--<android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"-->
-        <!--android:id="@+id/card_view_info_checkin"-->
-        <!--android:layout_width="400dp"-->
-        <!--android:layout_height="300dp"-->
 
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_alignParentStart="true"-->
-        <!--android:layout_centerVertical="true"-->
-        <!--android:layout_gravity="center"-->
-        <!--android:layout_marginLeft="136dp"-->
-        <!--android:layout_marginStart="136dp"-->
-        <!--card_view:cardCornerRadius="4dp">-->
+    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view_info_checkin"
+        android:layout_width="350sp"
+        android:layout_height="300sp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/card_view_libera_checkin"
+        android:layout_gravity="center"
+        android:layout_marginLeft="50sp"
+        card_view:cardCornerRadius="4sp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="30sp">
 
-        <!--<TextView-->
-            <!--android:id="@+id/tituloLiberarProcessoCheckin"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignParentTop="true"-->
-            <!--android:layout_centerHorizontal="true"-->
-            <!--android:layout_marginTop="55dp"-->
-            <!--android:text="Detalhes"-->
-            <!--android:textAllCaps="true"-->
-            <!--android:textSize="30sp"-->
-            <!--android:textStyle="bold" />-->
+        <TextView
+            android:id="@+id/detalhesDisciplina1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/detalhesDisciplina2"
+            android:layout_marginBottom="20sp"
+            android:text="Detalhes"
+            android:textAllCaps="true"
+            android:textSize="20sp"/>
 
-    <!--</android.support.v7.widget.CardView>-->
+            <TextView
+                android:id="@+id/detalhesDisciplina2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/detalhesDisciplina3"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:text="TextView2"
+                android:layout_marginBottom="20sp"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/detalhesDisciplina3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_above="@+id/detalhesDisciplina4"
+                android:layout_marginBottom="20sp"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="TextView3" />
+
+            <TextView
+                android:id="@+id/detalhesDisciplina4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="20sp"
+                android:layout_alignParentBottom="true"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="TextView4" />
+
+        </RelativeLayout>
+
+
+    </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_view_libera_checkin"
-        android:layout_width="400dp"
-        android:layout_height="300dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
+        android:layout_width="350sp"
+        android:layout_height="300sp"
+
         android:layout_below="@+id/app_bar_layout"
-        android:layout_gravity="center"
-        android:layout_marginEnd="132dp"
-        android:layout_marginRight="132dp"
-        android:layout_marginTop="52dp"
-        card_view:cardCornerRadius="4dp">
+        android:layout_marginTop="20sp"
+        android:layout_marginLeft="40sp"
+        android:layout_toRightOf="@id/card_view_info_checkin"
+        card_view:cardCornerRadius="5sp"
+        android:layout_marginRight="50sp">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusableInTouchMode="true"
+            android:focusable="true"
+            android:paddingHorizontal="30sp">
+
             <TextView
                 android:id="@+id/titulo_card_processo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="55sp"
+                android:layout_marginTop="40sp"
                 android:text="Processo"
                 android:textAllCaps="true"
                 android:textSize="30sp"
@@ -104,20 +172,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/titulo_card_processo"
-                android:layout_marginTop="55dp"
-                android:text="Tempo limite" />
+                android:layout_marginTop="55sp"
+                android:text="Tempo limite em minutos" />
 
             <EditText
+
                 android:layout_width="50sp"
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@+id/check_tempo_limite"
                 android:layout_alignBottom="@+id/check_tempo_limite"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
+                android:layout_marginEnd="33sp"
+                android:layout_marginRight="33sp"
                 android:inputType="number"
-                android:layout_marginEnd="33dp"
-                android:layout_marginRight="33dp" />
+                android:id="@+id/editText" />
 
+        </RelativeLayout>
             <Button
                 android:id="@+id/liberar_processo"
                 android:layout_width="match_parent"
@@ -125,7 +196,6 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
-
         </RelativeLayout>
 
 

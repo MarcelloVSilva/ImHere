@@ -175,6 +175,7 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
                 intent.putExtra("DISCIPLINA_CODIGO", proximaDisciplina.codigo);
                 intent.putExtra("DISCIPLINA_NOME", proximaDisciplina.nome);
                 intent.putExtra("DISCIPLINA_NOME_PROFESSOR", proximaDisciplina.nomeProfessor);
+                intent.putExtra("TOMADOR_ATUAL", tomadorEmUso);
                 startActivity(intent);
                 dialog.cancel();
                 finish();
