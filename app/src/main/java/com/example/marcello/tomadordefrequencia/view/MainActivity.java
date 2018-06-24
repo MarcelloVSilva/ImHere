@@ -73,7 +73,7 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
         tomadorEmUso = "cac209";
 
         SimpleDateFormat date = new SimpleDateFormat("EEEE");
-//        diaHoraAtual = new Date(2018, 05, 13);
+//        diaHoraAtual = new Date(2018, 05, 22);
         diaHoraAtual = new Date();
         diaDaSemanaHoje = date.format(diaHoraAtual);
 

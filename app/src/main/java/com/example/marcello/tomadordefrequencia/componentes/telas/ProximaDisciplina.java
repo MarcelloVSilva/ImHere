@@ -7,8 +7,11 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.nfc.NdefMessage;
+import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.nfc.tech.Ndef;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -33,16 +36,20 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Created by marcello on 6/14/18.
  */
 
 public class ProximaDisciplina extends AppCompatActivity {
+    private static final int RESULTADO_CODIGO_DISCIPLINA = 1;
     private DatabaseReference mDatabase;
     private String COD_DISCIPLINA_ATUAL;
     private String NOME_DISCIPLINA_ATUAL;
@@ -86,10 +93,26 @@ public class ProximaDisciplina extends AppCompatActivity {
 
         loginProfessorFragment.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                startActivity(inputIntent);
+                inputIntent.putExtra("TYPE", "PASSWORD");
+                inputIntent.putExtra("HINT_INPUT", "Digite o código de acesso");
+                startActivityForResult(inputIntent, RESULTADO_CODIGO_DISCIPLINA);
             }
         });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == RESULTADO_CODIGO_DISCIPLINA) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                if(data.getStringExtra("resposta").equals(COD_DISCIPLINA_ATUAL)){
+                    Intent telaProfessor = new Intent(this, LiberaInOutProfessor.class);
+                    startActivity(telaProfessor);
+                }
+            }
+        }
     }
 
     @Override
@@ -189,8 +212,7 @@ public class ProximaDisciplina extends AppCompatActivity {
                           Object checkout = dsAula.checkout;
                           Object aux2 = ((HashMap) checkout).get("status");
                           int statusAulaCheckout = ((Long) aux2).intValue();
-
-                          switch(statusAulaCheckin) {
+                          switch (statusAulaCheckin) {
                               case 0: //ainda nao comecou
                                   bundle.putString("checkinOuCheckout", "checkin");
                                   podeLerNfcAgora = false;
@@ -204,7 +226,7 @@ public class ProximaDisciplina extends AppCompatActivity {
                                   ft.replace(R.id.espaçoParaColocarFragment, emProcesso);
                                   break;
                               case 2: //encerrado
-                                  switch (statusAulaCheckout){
+                                  switch (statusAulaCheckout) {
                                       case 0:
                                           bundle.putString("checkinOuCheckout", "checkin");
                                           podeLerNfcAgora = false;
@@ -258,7 +280,41 @@ public class ProximaDisciplina extends AppCompatActivity {
     private void getTagInfo(Intent intent) throws IOException, JSONException {
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         byte[] idStudent = tag.getId();
+        NdefMessage ndefMessage = createNdefMessage("20110387");
+        Ndef ndef = Ndef.get(tag);
+
 //        registraPresencaParaAluno(idStudent);
+    }
+
+    private NdefMessage createNdefMessage(String content) {
+
+        NdefRecord ndefRecord = createTextRecord(content);
+
+        NdefMessage ndefMessage = new NdefMessage(new NdefRecord[]{ndefRecord});
+
+        return ndefMessage;
+    }
+
+    private NdefRecord createTextRecord(String content) {
+        try {
+            byte[] language;
+            language = Locale.getDefault().getLanguage().getBytes("UTF-8");
+
+            final byte[] text = content.getBytes("UTF-8");
+            final int languageSize = language.length;
+            final int textLength = text.length;
+            final ByteArrayOutputStream payload = new ByteArrayOutputStream(1 + languageSize + textLength);
+
+            payload.write((byte) (languageSize & 0x1F));
+            payload.write(language, 0, languageSize);
+            payload.write(text, 0, textLength);
+
+            return new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_TEXT, new byte[0], payload.toByteArray());
+
+        } catch (UnsupportedEncodingException e) {
+//            Log.e("createTextRecord", e.getMessage());
+        }
+        return null;
     }
 
 
