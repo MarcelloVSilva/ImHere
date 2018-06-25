@@ -304,8 +304,7 @@ public class ProximaDisciplina extends AppCompatActivity {
     private void getTagInfo(Intent intent) throws IOException, JSONException {
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         byte[] idStudent = tag.getId();
-//        NdefMessage ndefMessage = createNdefMessage("20110387");
-//        Ndef ndef = Ndef.get(tag);
+//        tag.describeContents()
 
 //        registraPresencaParaAluno(idStudent);
     }
