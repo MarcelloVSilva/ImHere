@@ -108,6 +108,8 @@ public class ProximaDisciplina extends AppCompatActivity {
             }
         });
 
+
+
     }
 
     @Override
@@ -282,82 +284,49 @@ public class ProximaDisciplina extends AppCompatActivity {
     }
 
 
-//    @Override
-//    protected void onNewIntent(Intent intent) {
-//        if(!podeLerNfcAgora) {
-//            Toast.makeText(this, "Não está na hora", Toast.LENGTH_LONG).show();
-//            return;
-//        }
-//        Toast.makeText(this, "Agora sim", Toast.LENGTH_LONG).show();
-//        try {
-//            getTagInfo(intent);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        super.onNewIntent(intent);
-//    }
-//
-////    private void getTagInfo(Intent intent) throws IOException, JSONException {
-////        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-////        byte[] idStudent = tag.getId();
-////        NdefMessage ndefMessage = createNdefMessage("20110387");
-////        Ndef ndef = Ndef.get(tag);
-////
-//////        registraPresencaParaAluno(idStudent);
-////    }
-////
-////    private NdefMessage createNdefMessage(String content) {
-////
-////        NdefRecord ndefRecord = createTextRecord(content);
-////
-////        NdefMessage ndefMessage = new NdefMessage(new NdefRecord[]{ndefRecord});
-////
-////        return ndefMessage;
-////    }
-////
-////    private NdefRecord createTextRecord(String content) {
-////        try {
-////            byte[] language;
-////            language = Locale.getDefault().getLanguage().getBytes("UTF-8");
-////
-////            final byte[] text = content.getBytes("UTF-8");
-////            final int languageSize = language.length;
-////            final int textLength = text.length;
-////            final ByteArrayOutputStream payload = new ByteArrayOutputStream(1 + languageSize + textLength);
-////
-////            payload.write((byte) (languageSize & 0x1F));
-////            payload.write(language, 0, languageSize);
-////            payload.write(text, 0, textLength);
-////
-////            return new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_TEXT, new byte[0], payload.toByteArray());
-////
-////        } catch (UnsupportedEncodingException e) {
-//////            Log.e("createTextRecord", e.getMessage());
-////        }
-////        return null;
-////    }
-////
-////
-////    @Override
-////    protected void onResume(){
-////
-////        Intent intent = new Intent(this, ProximaDisciplina.class);
-////        intent.addFlags(Intent.FLAG_RECEIVER_REPLACE_PENDING);
-////
-////        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-////                0, intent, 0);
-////        IntentFilter[] intentFilter = new IntentFilter[] {};
-////
-////        nfcAdapter.enableForegroundDispatch(this, pendingIntent, intentFilter, null);
-////        super.onResume();
-////    }
-////
-////    @Override
-////    protected void onPause(){
-////        nfcAdapter.disableForegroundDispatch(this);
-////        super.onPause();
-////    }
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if(!podeLerNfcAgora) {
+            Toast.makeText(this, "Não está na hora", Toast.LENGTH_LONG).show();
+            return;
+        }
+        Toast.makeText(this, "Agora sim", Toast.LENGTH_LONG).show();
+        try {
+            getTagInfo(intent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        super.onNewIntent(intent);
+    }
+
+    private void getTagInfo(Intent intent) throws IOException, JSONException {
+        Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        byte[] idStudent = tag.getId();
+//        NdefMessage ndefMessage = createNdefMessage("20110387");
+//        Ndef ndef = Ndef.get(tag);
+
+//        registraPresencaParaAluno(idStudent);
+    }
+    @Override
+    protected void onResume(){
+
+        Intent intent = new Intent(this, ProximaDisciplina.class);
+        intent.addFlags(Intent.FLAG_RECEIVER_REPLACE_PENDING);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                0, intent, 0);
+        IntentFilter[] intentFilter = new IntentFilter[] {};
+
+        nfcAdapter.enableForegroundDispatch(this, pendingIntent, intentFilter, null);
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause(){
+        nfcAdapter.disableForegroundDispatch(this);
+        super.onPause();
+    }
 
 }
