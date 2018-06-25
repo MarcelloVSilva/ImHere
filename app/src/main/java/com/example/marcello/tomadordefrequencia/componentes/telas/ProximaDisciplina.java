@@ -72,6 +72,7 @@ public class ProximaDisciplina extends AppCompatActivity {
     private final int CHECKOUT_EM_PROCESSO = 21;
     private final int CHECKOUT_ENCERRADO  = 22;
     private final int SEM_AULA = 99;
+    private String idDaProximaAula;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,6 +121,7 @@ public class ProximaDisciplina extends AppCompatActivity {
                     telaProfessor.putExtra("CODIGO_DISCIPLINA", COD_DISCIPLINA_ATUAL);
                     telaProfessor.putExtra("STATUS_ATUAL", String.valueOf(STATUS_ATUAL));
                     telaProfessor.putExtra("CODIGO_TOMADOR_SALA", TOMADOR_ATUAL_EM_USO);
+                    telaProfessor.putExtra("ID_AULA", idDaProximaAula);
                     startActivity(telaProfessor);
                 }
             }
@@ -149,7 +151,7 @@ public class ProximaDisciplina extends AppCompatActivity {
                         int ultimaVez = 1;
                         Long contador = dataSnapshot.getChildrenCount();
                         long milisDaProximaAula = 0;
-                        String idDaProximaAula = new String();
+                        idDaProximaAula = new String();
 
                         for (DataSnapshot ds : dataSnapshot.getChildren()) {
                             aula = ds.getValue(Aula.class);
@@ -208,9 +210,9 @@ public class ProximaDisciplina extends AppCompatActivity {
                       @Override
                       public void onDataChange(DataSnapshot dataSnapshot) {
                           Bundle bundle = new Bundle();
-
-//                          emProcesso.setArguments(bundle);
-//                          fimDoProcesso.setArguments(bundle);
+                          AindaNaoComecou aindaNaoComecouTest = (AindaNaoComecou) getFragmentManager().findFragmentByTag("aindaNaoComecou");
+                          EmProcessoAula emProcessoAulaTest = (EmProcessoAula) getFragmentManager().findFragmentByTag("emProcesso");
+                          FimDoProcesso fimDoProcessoTest = (FimDoProcesso) getFragmentManager().findFragmentByTag("fimDoProcesso");
 
                           FragmentTransaction ft = getFragmentManager().beginTransaction();
                           dsAula = dataSnapshot.getValue(Aula.class);
@@ -228,14 +230,16 @@ public class ProximaDisciplina extends AppCompatActivity {
                                   bundle.putString("checkinOuCheckout", "checkin");
                                   podeLerNfcAgora = false;
                                   aindaNaoComecou.setArguments(bundle);
-                                  ft.replace(R.id.espaçoParaColocarFragment, aindaNaoComecou);
+                                  if(aindaNaoComecouTest==null)
+                                    ft.replace(R.id.espaçoParaColocarFragment, aindaNaoComecou, "aindaNaoComecou");
                                   break;
                               case 1: //em andamento
                                   STATUS_ATUAL = CHECKIN_EM_PROCESSO;
                                   bundle.putString("checkinOuCheckout", "checkin");
                                   podeLerNfcAgora = true;
                                   emProcesso.setArguments(bundle);
-                                  ft.replace(R.id.espaçoParaColocarFragment, emProcesso);
+                                  if(emProcessoAulaTest==null)
+                                      ft.replace(R.id.espaçoParaColocarFragment, emProcesso, "emProcesso");
                                   break;
                               case 2: //encerrado
                                   switch (statusAulaCheckout) {
@@ -244,21 +248,24 @@ public class ProximaDisciplina extends AppCompatActivity {
                                           bundle.putString("checkinOuCheckout", "checkin");
                                           podeLerNfcAgora = false;
                                           fimDoProcesso.setArguments(bundle);
-                                          ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso);
+                                          if(fimDoProcessoTest ==null)
+                                              ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso, "fimDoProcesso");
                                           break;
                                       case 1:
                                           STATUS_ATUAL = CHECKOUT_EM_PROCESSO;
                                           bundle.putString("checkinOuCheckout", "checkout");
                                           podeLerNfcAgora = true;
                                           emProcesso.setArguments(bundle);
-                                          ft.replace(R.id.espaçoParaColocarFragment, emProcesso);
+                                          if(emProcessoAulaTest ==null)
+                                              ft.replace(R.id.espaçoParaColocarFragment, emProcesso, "emProcesso");
                                           break;
                                       case 2:
                                           STATUS_ATUAL = CHECKIN_ENCERRADO;
                                           bundle.putString("checkinOuCheckout", "checkout");
                                           podeLerNfcAgora = false;
                                           fimDoProcesso.setArguments(bundle);
-                                          ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso);
+                                          if(fimDoProcessoTest ==null)
+                                              ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso, "fimDoProcesso");
                                           break;
                                   }
                                   break;

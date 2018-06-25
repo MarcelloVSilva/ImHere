@@ -2,7 +2,9 @@ package com.example.marcello.tomadordefrequencia.componentes.telas;
 
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -43,6 +45,9 @@ public class LiberaInOutProfessor extends AppCompatActivity {
     private int DIA;
     private int STATUS_ATUAL;
 
+    public boolean runnableTimeProcess;
+
+
     private final int CHECKIN_AINDA_NAO_COMECOU = 00;
     private final int CHECKIN_EM_PROCESSO = 10;
     private final int CHECKIN_ENCERRADO = 20;
@@ -52,30 +57,30 @@ public class LiberaInOutProfessor extends AppCompatActivity {
     private EditText tempo_definido;
     private CheckBox check_tempo_limite;
 
-//    private Object hora;
+    public long tempo_processo_aberto;
 
-    public static class Checkin{
-        Boolean podeLiberar;
-        ArrayList alunos;
-        int status;
+    Handler handler = new Handler();
 
-        public Checkin(Boolean podeLiberar, ArrayList alunos, int status){
-            this.podeLiberar = podeLiberar;
-            this.alunos = alunos;
-            this.status = status;
+    private Runnable updateData = new Runnable(){
+        public void run(){
+            handler.postDelayed(updateData,10000);
         }
-
-    }
+    };
+    private String idAulaAtual;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.liberar_processo_professor);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         codDisciplina = getIntent().getStringExtra("CODIGO_DISCIPLINA");
+        idAulaAtual = getIntent().getStringExtra("ID_AULA");
         codSala= getIntent().getStringExtra("CODIGO_TOMADOR_SALA");
         Date date = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
+
+
+
 
         ANO = cal.get(Calendar.YEAR);
         MES = cal.get(Calendar.MONTH);
@@ -99,6 +104,8 @@ public class LiberaInOutProfessor extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        DatabaseReference diaAula = mDatabase.child("/disciplinas/" + codDisciplina + "/aulas/" + ANO + "/" + MES + "/" + DIA);
         mDatabase.child("/disciplinas/"+codDisciplina).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -134,12 +141,11 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                 checkinOuCheckout.setText("Check-in");
                 liberarProcesso.setText("Criar aula e iniciar checkin");
                 liberarProcesso.setOnClickListener(new View.OnClickListener() {
+
                     @Override
                     public void onClick(View view) {
-                        if(check_tempo_limite.isChecked()){
-                            tempo_definido.getText();
-                        }
-                        DatabaseReference diaAula = mDatabase.child("/disciplinas/" + codDisciplina + "/aulas/" + ANO + "/" + MES + "/" + DIA);
+                        tempo_processo_aberto = 0;
+
                         DatabaseReference diaAulaRef = diaAula.getRef();
                         String key = diaAulaRef.push().getKey();
                         Map<String, Object> checkin = new HashMap<>();
@@ -154,26 +160,89 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                         Aula novaAula = new Aula("25/06/2018", hora, "cac209", checkin, checkout);
                         diaAula.child("/"+key).setValue(novaAula);
                         finish();
+
+                        if(check_tempo_limite.isChecked()){
+                            int delayMillis = Integer.parseInt(String.valueOf(tempo_definido.getText()));
+                            tempo_processo_aberto = delayMillis*60*1000;
+
+                            runnableTimeProcess =  new android.os.Handler().postDelayed(
+                                    new Runnable() {
+                                        public void run() {
+                                            Map<String, Object> status = new HashMap<>();
+                                            status.put("status", 2);
+                                            diaAula.child("/"+key+"/checkin").updateChildren(status);
+                                        }
+                                    },
+                                    tempo_processo_aberto);
+                        }
                     }
                 });
                 break;
             case CHECKIN_AINDA_NAO_COMECOU:
                 checkinOuCheckout.setText("Check-in");
                 liberarProcesso.setText("Iniciar checkin");
+                liberarProcesso.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Map<String, Object> status = new HashMap<>();
+                        status.put("status", 1);
+                        diaAula.child(idAulaAtual+"/checkin").updateChildren(status);
+                        if(check_tempo_limite.isChecked()){
+                            int delayMillis = Integer.parseInt(String.valueOf(tempo_definido.getText()));
+                            tempo_processo_aberto = delayMillis*60*1000;
+
+                            runnableTimeProcess =  new android.os.Handler().postDelayed(
+                                    new Runnable() {
+                                        public void run() {
+                                            Map<String, Object> status = new HashMap<>();
+                                            status.put("status", 2);
+                                            diaAula.child(idAulaAtual+"/checkin").updateChildren(status);
+                                        }
+                                    },
+                                    tempo_processo_aberto);
+                        }
+                        finish();
+                    }
+                });
                 break;
             case CHECKIN_EM_PROCESSO:
                 checkinOuCheckout.setText("Check-in");
-                check_tempo_limite.setVisibility(View.INVISIBLE);
-                tempo_definido.setVisibility(View.INVISIBLE);
+                check_tempo_limite.setEnabled(false);
+                tempo_definido.setEnabled(false);
                 liberarProcesso.setText("Encerrar checkin");
+                liberarProcesso.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Map<String, Object> statusCheckin = new HashMap<>();
+                        Map<String, Object> statusCheckout = new HashMap<>();
+                        statusCheckin.put("status", 2);
+                        statusCheckin.put("podeLiberar", false);
+                        statusCheckout.put("podeLiberar", true);
+                        diaAula.child(idAulaAtual+"/checkin").updateChildren(statusCheckin);
+                        diaAula.child(idAulaAtual+"/checkout").updateChildren(statusCheckout);
+                        finish();
+                    }
+                });
                 break;
             case CHECKIN_ENCERRADO:
                 checkinOuCheckout.setText("Check-out");
                 liberarProcesso.setText("Iniciar checkout");
+                liberarProcesso.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                });
                 break;
             case CHECKOUT_EM_PROCESSO:
                 checkinOuCheckout.setText("Check-out");
                 liberarProcesso.setText("Finalizar checkout");
+                liberarProcesso.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                    }
+                });
                 break;
             case CHECKOUT_ENCERRADO:
                 checkinOuCheckout.setText("Check-out");
