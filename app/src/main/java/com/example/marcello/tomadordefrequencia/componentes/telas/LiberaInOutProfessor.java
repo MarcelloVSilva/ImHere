@@ -1,19 +1,12 @@
 package com.example.marcello.tomadordefrequencia.componentes.telas;
 
 
-import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.marcello.tomadordefrequencia.R;
@@ -30,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class LiberaInOutProfessor extends AppCompatActivity {
 
@@ -43,9 +37,35 @@ public class LiberaInOutProfessor extends AppCompatActivity {
     private TextView detalhes4;
     private TextView checkinOuCheckout;
     private String codSala;
+    private Button liberarProcesso;
     private int ANO;
     private int MES;
     private int DIA;
+    private int STATUS_ATUAL;
+
+    private final int CHECKIN_AINDA_NAO_COMECOU = 00;
+    private final int CHECKIN_EM_PROCESSO = 10;
+    private final int CHECKIN_ENCERRADO = 20;
+    private final int CHECKOUT_EM_PROCESSO = 21;
+    private final int CHECKOUT_ENCERRADO  = 22;
+    private final int SEM_AULA = 99;
+    private EditText tempo_definido;
+    private CheckBox check_tempo_limite;
+
+//    private Object hora;
+
+    public static class Checkin{
+        Boolean podeLiberar;
+        ArrayList alunos;
+        int status;
+
+        public Checkin(Boolean podeLiberar, ArrayList alunos, int status){
+            this.podeLiberar = podeLiberar;
+            this.alunos = alunos;
+            this.status = status;
+        }
+
+    }
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +73,6 @@ public class LiberaInOutProfessor extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         codDisciplina = getIntent().getStringExtra("CODIGO_DISCIPLINA");
         codSala= getIntent().getStringExtra("CODIGO_TOMADOR_SALA");
-
         Date date = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -62,6 +81,12 @@ public class LiberaInOutProfessor extends AppCompatActivity {
         MES = cal.get(Calendar.MONTH);
         DIA = cal.get(Calendar.DAY_OF_MONTH);
 
+//        hora = new Object();
+
+        liberarProcesso = findViewById(R.id.liberar_processo);
+
+        check_tempo_limite = findViewById(R.id.check_tempo_limite);
+        tempo_definido = findViewById(R.id.tempo_limite_definido);
         nomeDisciplina = findViewById(R.id.nomeDaDisciplina);
         nomeProfessor = findViewById(R.id.nomeDoProfessor);
         detalhes1= findViewById(R.id.detalhesDisciplina1);
@@ -103,24 +128,59 @@ public class LiberaInOutProfessor extends AppCompatActivity {
 
             }
         });
-
-        mDatabase.child("/disciplinas/" + codDisciplina + "/aulas/" + ANO + "/" + MES + "/" + "22").
-                addValueEventListener(new ValueEventListener() {
+        STATUS_ATUAL = Integer.parseInt(getIntent().getStringExtra("STATUS_ATUAL"));
+        switch (STATUS_ATUAL){
+            case SEM_AULA:
+                checkinOuCheckout.setText("Check-in");
+                liberarProcesso.setText("Criar aula e iniciar checkin");
+                liberarProcesso.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Aula aula = new Aula();
-                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            aula = ds.getValue(Aula.class);
+                    public void onClick(View view) {
+                        if(check_tempo_limite.isChecked()){
+                            tempo_definido.getText();
                         }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
+                        DatabaseReference diaAula = mDatabase.child("/disciplinas/" + codDisciplina + "/aulas/" + ANO + "/" + MES + "/" + DIA);
+                        DatabaseReference diaAulaRef = diaAula.getRef();
+                        String key = diaAulaRef.push().getKey();
+                        Map<String, Object> checkin = new HashMap<>();
+                        Map<String, Object> checkout = new HashMap<>();
+                        Map<String, Object> hora = new HashMap<>();
+                        checkin.put("podeLiberar", true);
+                        checkin.put("status", 1);
+                        checkout.put("podeLiberar", false);
+                        checkout.put("status", 0);
+                        hora.put("fim", "23:59");
+                        hora.put("inicio", "23:00");
+                        Aula novaAula = new Aula("25/06/2018", hora, "cac209", checkin, checkout);
+                        diaAula.child("/"+key).setValue(novaAula);
+                        finish();
                     }
                 });
+                break;
+            case CHECKIN_AINDA_NAO_COMECOU:
+                checkinOuCheckout.setText("Check-in");
+                liberarProcesso.setText("Iniciar checkin");
+                break;
+            case CHECKIN_EM_PROCESSO:
+                checkinOuCheckout.setText("Check-in");
+                check_tempo_limite.setVisibility(View.INVISIBLE);
+                tempo_definido.setVisibility(View.INVISIBLE);
+                liberarProcesso.setText("Encerrar checkin");
+                break;
+            case CHECKIN_ENCERRADO:
+                checkinOuCheckout.setText("Check-out");
+                liberarProcesso.setText("Iniciar checkout");
+                break;
+            case CHECKOUT_EM_PROCESSO:
+                checkinOuCheckout.setText("Check-out");
+                liberarProcesso.setText("Finalizar checkout");
+                break;
+            case CHECKOUT_ENCERRADO:
+                checkinOuCheckout.setText("Check-out");
+                break;
+        }
 
-
+//        mDatabase.child("/disciplinas/" + codDisciplina + "/aulas/" + ANO + "/" + MES + "/" + DIA);
     }
 
     //ligar com banco

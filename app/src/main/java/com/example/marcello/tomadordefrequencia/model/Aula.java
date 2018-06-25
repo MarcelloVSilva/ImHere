@@ -18,7 +18,7 @@ public class Aula implements Serializable {
 
     }
 
-    public Aula(String data, String hora, String sala, Object checkin, Object checkout) {
+    public Aula(String data, Object hora, String sala, Object checkin, Object checkout) {
         this.hora = hora;
         this.data = data;
         this.sala = sala;

@@ -90,7 +90,8 @@
             android:layout_marginBottom="20sp"
             android:text="Detalhes"
             android:textAllCaps="true"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/detalhesDisciplina2"
@@ -186,7 +187,7 @@
                 android:layout_marginEnd="33sp"
                 android:layout_marginRight="33sp"
                 android:inputType="number"
-                android:id="@+id/editText" />
+                android:id="@+id/tempo_limite_definido" />
 
         </RelativeLayout>
             <Button

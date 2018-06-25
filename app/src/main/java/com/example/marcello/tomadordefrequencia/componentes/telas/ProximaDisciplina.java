@@ -65,7 +65,13 @@ public class ProximaDisciplina extends AppCompatActivity {
 
     NfcAdapter nfcAdapter;
     Boolean podeLerNfcAgora;
-
+    public int STATUS_ATUAL;
+    private final int CHECKIN_AINDA_NAO_COMECOU = 00;
+    private final int CHECKIN_EM_PROCESSO = 10;
+    private final int CHECKIN_ENCERRADO = 20;
+    private final int CHECKOUT_EM_PROCESSO = 21;
+    private final int CHECKOUT_ENCERRADO  = 22;
+    private final int SEM_AULA = 99;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,6 +118,7 @@ public class ProximaDisciplina extends AppCompatActivity {
                 if(data.getStringExtra("resposta").equals(COD_DISCIPLINA_ATUAL)){
                     Intent telaProfessor = new Intent(this, LiberaInOutProfessor.class);
                     telaProfessor.putExtra("CODIGO_DISCIPLINA", COD_DISCIPLINA_ATUAL);
+                    telaProfessor.putExtra("STATUS_ATUAL", String.valueOf(STATUS_ATUAL));
                     telaProfessor.putExtra("CODIGO_TOMADOR_SALA", TOMADOR_ATUAL_EM_USO);
                     startActivity(telaProfessor);
                 }
@@ -171,14 +178,13 @@ public class ProximaDisciplina extends AppCompatActivity {
                             contador--;
                         }
                         if(proximaAula == null){
+                            STATUS_ATUAL = SEM_AULA;
                             FragmentTransaction ft = getFragmentManager().beginTransaction();
                             Fragment semAula = new SemAulasHojeParaDisciplina();
                             ft.replace(R.id.espaçoParaColocarFragment, semAula);
                             ft.commitAllowingStateLoss();
                             dialog.cancel();
                         }
-                        // Chamar fragment com avisando que nao tem aula
-                        // mostrar que nao tem aulas cadastradas para hoje
                     }
 
                     @Override
@@ -218,12 +224,14 @@ public class ProximaDisciplina extends AppCompatActivity {
                           int statusAulaCheckout = ((Long) aux2).intValue();
                           switch (statusAulaCheckin) {
                               case 0: //ainda nao comecou
+                                  STATUS_ATUAL = CHECKIN_AINDA_NAO_COMECOU;
                                   bundle.putString("checkinOuCheckout", "checkin");
                                   podeLerNfcAgora = false;
                                   aindaNaoComecou.setArguments(bundle);
                                   ft.replace(R.id.espaçoParaColocarFragment, aindaNaoComecou);
                                   break;
                               case 1: //em andamento
+                                  STATUS_ATUAL = CHECKIN_EM_PROCESSO;
                                   bundle.putString("checkinOuCheckout", "checkin");
                                   podeLerNfcAgora = true;
                                   emProcesso.setArguments(bundle);
@@ -232,18 +240,21 @@ public class ProximaDisciplina extends AppCompatActivity {
                               case 2: //encerrado
                                   switch (statusAulaCheckout) {
                                       case 0:
+                                          STATUS_ATUAL = CHECKIN_ENCERRADO;
                                           bundle.putString("checkinOuCheckout", "checkin");
                                           podeLerNfcAgora = false;
                                           fimDoProcesso.setArguments(bundle);
                                           ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso);
                                           break;
                                       case 1:
+                                          STATUS_ATUAL = CHECKOUT_EM_PROCESSO;
                                           bundle.putString("checkinOuCheckout", "checkout");
                                           podeLerNfcAgora = true;
                                           emProcesso.setArguments(bundle);
                                           ft.replace(R.id.espaçoParaColocarFragment, emProcesso);
                                           break;
                                       case 2:
+                                          STATUS_ATUAL = CHECKIN_ENCERRADO;
                                           bundle.putString("checkinOuCheckout", "checkout");
                                           podeLerNfcAgora = false;
                                           fimDoProcesso.setArguments(bundle);
