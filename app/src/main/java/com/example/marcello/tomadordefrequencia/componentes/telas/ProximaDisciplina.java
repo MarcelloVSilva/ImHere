@@ -204,10 +204,10 @@ public class ProximaDisciplina extends AppCompatActivity {
                 addValueEventListener(new ValueEventListener() {
 
                     Aula dsAula = new Aula();
-                    Fragment emProcesso = new EmProcessoAula();
+                    Fragment emProcesso;
 
-                    Fragment fimDoProcesso = new FimDoProcesso();
-                    Fragment aindaNaoComecou = new AindaNaoComecou();
+                    Fragment fimDoProcesso;
+                    Fragment aindaNaoComecou;
 
                       @Override
                       public void onDataChange(DataSnapshot dataSnapshot) {
@@ -228,46 +228,51 @@ public class ProximaDisciplina extends AppCompatActivity {
                           int statusAulaCheckout = ((Long) aux2).intValue();
                           switch (statusAulaCheckin) {
                               case 0: //ainda nao comecou
+                                  aindaNaoComecou = new AindaNaoComecou();
+                                  ft.replace(R.id.espaçoParaColocarFragment, aindaNaoComecou, "aindaNaoComecou");
                                   STATUS_ATUAL = CHECKIN_AINDA_NAO_COMECOU;
                                   bundle.putString("checkinOuCheckout", "checkin");
                                   podeLerNfcAgora = false;
                                   aindaNaoComecou.setArguments(bundle);
-                                  if(aindaNaoComecouTest==null)
-                                    ft.replace(R.id.espaçoParaColocarFragment, aindaNaoComecou, "aindaNaoComecou");
+//                                  if(aindaNaoComecouTest==null)
                                   break;
                               case 1: //em andamento
+                                  emProcesso = new EmProcessoAula();
+                                  ft.replace(R.id.espaçoParaColocarFragment, emProcesso, "emProcesso");
                                   STATUS_ATUAL = CHECKIN_EM_PROCESSO;
                                   bundle.putString("checkinOuCheckout", "checkin");
                                   podeLerNfcAgora = true;
                                   emProcesso.setArguments(bundle);
-                                  if(emProcessoAulaTest==null)
-                                      ft.replace(R.id.espaçoParaColocarFragment, emProcesso, "emProcesso");
+//                                  if(emProcessoAulaTest==null)
                                   break;
                               case 2: //encerrado
                                   switch (statusAulaCheckout) {
                                       case 0:
+                                          fimDoProcesso = new FimDoProcesso();
+                                          ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso, "fimDoProcesso");
                                           STATUS_ATUAL = CHECKIN_ENCERRADO;
                                           bundle.putString("checkinOuCheckout", "checkin");
                                           podeLerNfcAgora = false;
                                           fimDoProcesso.setArguments(bundle);
-                                          if(fimDoProcessoTest ==null)
-                                              ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso, "fimDoProcesso");
+//                                          if(fimDoProcessoTest ==null)
                                           break;
                                       case 1:
+                                          emProcesso = new EmProcessoAula();
+                                          ft.replace(R.id.espaçoParaColocarFragment, emProcesso, "emProcesso");
                                           STATUS_ATUAL = CHECKOUT_EM_PROCESSO;
                                           bundle.putString("checkinOuCheckout", "checkout");
                                           podeLerNfcAgora = true;
+//                                          if(emProcessoAulaTest ==null)
                                           emProcesso.setArguments(bundle);
-                                          if(emProcessoAulaTest ==null)
-                                              ft.replace(R.id.espaçoParaColocarFragment, emProcesso, "emProcesso");
                                           break;
                                       case 2:
+                                          fimDoProcesso = new FimDoProcesso();
+                                          ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso, "fimDoProcesso");
                                           STATUS_ATUAL = CHECKIN_ENCERRADO;
                                           bundle.putString("checkinOuCheckout", "checkout");
                                           podeLerNfcAgora = false;
                                           fimDoProcesso.setArguments(bundle);
-                                          if(fimDoProcessoTest ==null)
-                                              ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso, "fimDoProcesso");
+//                                          if(fimDoProcessoTest ==null)
                                           break;
                                   }
                                   break;

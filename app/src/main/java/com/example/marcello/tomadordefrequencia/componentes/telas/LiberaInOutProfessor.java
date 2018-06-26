@@ -187,20 +187,20 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                         Map<String, Object> status = new HashMap<>();
                         status.put("status", 1);
                         diaAula.child(idAulaAtual+"/checkin").updateChildren(status);
-                        if(check_tempo_limite.isChecked()){
-                            int delayMillis = Integer.parseInt(String.valueOf(tempo_definido.getText()));
-                            tempo_processo_aberto = delayMillis*60*1000;
-
-                            runnableTimeProcess =  new android.os.Handler().postDelayed(
-                                    new Runnable() {
-                                        public void run() {
-                                            Map<String, Object> status = new HashMap<>();
-                                            status.put("status", 2);
-                                            diaAula.child(idAulaAtual+"/checkin").updateChildren(status);
-                                        }
-                                    },
-                                    tempo_processo_aberto);
-                        }
+//                        if(check_tempo_limite.isChecked()){
+//                            int delayMillis = Integer.parseInt(String.valueOf(tempo_definido.getText()));
+//                            tempo_processo_aberto = delayMillis*60*1000;
+//
+//                            runnableTimeProcess =  new android.os.Handler().postDelayed(
+//                                    new Runnable() {
+//                                        public void run() {
+//                                            Map<String, Object> status = new HashMap<>();
+//                                            status.put("status", 2);
+//                                            diaAula.child(idAulaAtual+"/checkin").updateChildren(status);
+//                                        }
+//                                    },
+//                                    tempo_processo_aberto);
+//                        }
                         finish();
                     }
                 });
@@ -230,7 +230,10 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                 liberarProcesso.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
+                        Map<String, Object> status = new HashMap<>();
+                        status.put("status", 1);
+                        diaAula.child(idAulaAtual+"/checkout").updateChildren(status);
+                        finish();
                     }
                 });
                 break;
@@ -240,6 +243,11 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                 liberarProcesso.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        Map<String, Object> status = new HashMap<>();
+                        status.put("status", 2);
+                        status.put("podeLiberar", false);
+                        diaAula.child(idAulaAtual+"/checkout").updateChildren(status);
+                        finish();
 
                     }
                 });
