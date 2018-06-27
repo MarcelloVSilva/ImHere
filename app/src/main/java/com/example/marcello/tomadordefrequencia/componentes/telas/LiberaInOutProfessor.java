@@ -9,7 +9,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.marcello.tomadordefrequencia.R;
 import com.example.marcello.tomadordefrequencia.model.Aula;
@@ -58,14 +60,6 @@ public class LiberaInOutProfessor extends AppCompatActivity {
     private CheckBox check_tempo_limite;
 
     public long tempo_processo_aberto;
-
-    Handler handler = new Handler();
-
-    private Runnable updateData = new Runnable(){
-        public void run(){
-            handler.postDelayed(updateData,10000);
-        }
-    };
     private String idAulaAtual;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,14 +73,14 @@ public class LiberaInOutProfessor extends AppCompatActivity {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
 
-
-
+        ImageButton back = findViewById(R.id.imageButtonBackFinishAct);
+        back.setOnClickListener((v)->{
+            finish();
+        });
 
         ANO = cal.get(Calendar.YEAR);
         MES = cal.get(Calendar.MONTH);
         DIA = cal.get(Calendar.DAY_OF_MONTH);
-
-//        hora = new Object();
 
         liberarProcesso = findViewById(R.id.liberar_processo);
 
@@ -112,7 +106,7 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                 Disciplina disciplina = dataSnapshot.getValue(Disciplina.class);
                 nomeDisciplina.setText(disciplina.nome);
                 nomeProfessor.setText(disciplina.nomeProfessor);
-                detalhes4.setText("Quantidade de alunos: "+String.valueOf(((ArrayList) disciplina.alunos).size()));
+//                detalhes4.setText("Quantidade de alunos: "+String.valueOf(((ArrayList) disciplina.alunos).size()));
             }
 
             @Override
@@ -161,20 +155,20 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                         diaAula.child("/"+key).setValue(novaAula);
                         finish();
 
-                        if(check_tempo_limite.isChecked()){
-                            int delayMillis = Integer.parseInt(String.valueOf(tempo_definido.getText()));
-                            tempo_processo_aberto = delayMillis*60*1000;
-
-                            runnableTimeProcess =  new android.os.Handler().postDelayed(
-                                    new Runnable() {
-                                        public void run() {
-                                            Map<String, Object> status = new HashMap<>();
-                                            status.put("status", 2);
-                                            diaAula.child("/"+key+"/checkin").updateChildren(status);
-                                        }
-                                    },
-                                    tempo_processo_aberto);
-                        }
+//                        if(check_tempo_limite.isChecked()){
+//                            int delayMillis = Integer.parseInt(String.valueOf(tempo_definido.getText()));
+//                            tempo_processo_aberto = delayMillis*60*1000;
+//
+//                            runnableTimeProcess =  new android.os.Handler().postDelayed(
+//                                    new Runnable() {
+//                                        public void run() {
+//                                            Map<String, Object> status = new HashMap<>();
+//                                            status.put("status", 2);
+//                                            diaAula.child("/"+key+"/checkin").updateChildren(status);
+//                                        }
+//                                    },
+//                                    tempo_processo_aberto);
+//                        }
                     }
                 });
                 break;
@@ -256,14 +250,8 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                 checkinOuCheckout.setText("Check-out");
                 break;
         }
-
-//        mDatabase.child("/disciplinas/" + codDisciplina + "/aulas/" + ANO + "/" + MES + "/" + DIA);
     }
 
-    //ligar com banco
-    //verificar se tem aula pra hoje
-    //se tiver só libera ou fecha processo
-    //caso nao tenha aula, criar aula pra hoje, ja com check-in status 1.
 }
 
 

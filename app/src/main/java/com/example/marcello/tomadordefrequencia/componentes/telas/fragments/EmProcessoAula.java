@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.example.marcello.tomadordefrequencia.R;
 import com.example.marcello.tomadordefrequencia.componentes.telas.InputEdit;
+import com.example.marcello.tomadordefrequencia.componentes.telas.ProximaDisciplina;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -50,7 +51,8 @@ public class EmProcessoAula extends Fragment {
         if (requestCode == RESULTADO_MATRICULA_ALUNO) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-//                mDatabase.child()
+                String matricula = data.getStringExtra("resposta");
+                ((ProximaDisciplina)getActivity()).verificarSeAlunoExisteNaDisciplinaMatricula(matricula);
             }
         }
     }

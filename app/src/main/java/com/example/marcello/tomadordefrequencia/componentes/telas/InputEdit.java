@@ -15,11 +15,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.marcello.tomadordefrequencia.R;
 
 public class InputEdit extends AppCompatActivity {
-
+    public String verificar = new String();
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.input);
@@ -30,21 +31,27 @@ public class InputEdit extends AppCompatActivity {
             respostaCampo.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         }
         respostaCampo.setSelection(respostaCampo.getText().length());
-        ImageButton back = findViewById(R.id.imageButtonBackFinishAct);
         respostaCampo.setHint(getIntent().getStringExtra("HINT_INPUT"));
-        Button confirmabtn = findViewById(R.id.confirmabtn);
 
-        confirmabtn.setOnClickListener((v)->{
-            Intent devolve = new Intent();
-            String resposta = String.valueOf(respostaCampo.getText());
-            devolve.putExtra("resposta", resposta);
-            setResult(RESULT_OK, devolve);
-            finish();
-        });
-
+        verificar = getIntent().getStringExtra("PARA_VERIFICAR");
+        ImageButton back = findViewById(R.id.imageButtonBackFinishAct);
         back.setOnClickListener((v)->{
             finish();
         });
+
+
+        Button confirmabtn = findViewById(R.id.confirmabtn);
+        confirmabtn.setOnClickListener((v)->{
+            Intent devolve = new Intent();
+            String resposta = String.valueOf(respostaCampo.getText());
+            if(resposta.equals("")) Toast.makeText(this, "Insira o código da disciplina", Toast.LENGTH_LONG).show();
+            else if(verificar != null && resposta.equals(verificar)) {
+                devolve.putExtra("resposta", resposta);
+                setResult(RESULT_OK, devolve);
+                finish();
+            }else Toast.makeText(this, "Código errado", Toast.LENGTH_LONG).show();
+        });
+
     }
 
 //    @Override

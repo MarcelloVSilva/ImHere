@@ -1,18 +1,17 @@
 package com.example.marcello.tomadordefrequencia.componentes.telas;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.nfc.NdefMessage;
-import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.Ndef;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -26,8 +25,12 @@ import com.example.marcello.tomadordefrequencia.R;
 import com.example.marcello.tomadordefrequencia.componentes.telas.fragments.AindaNaoComecou;
 import com.example.marcello.tomadordefrequencia.componentes.telas.fragments.EmProcessoAula;
 import com.example.marcello.tomadordefrequencia.componentes.telas.fragments.FimDoProcesso;
+import com.example.marcello.tomadordefrequencia.componentes.telas.fragments.IdentificacaoAluno;
 import com.example.marcello.tomadordefrequencia.componentes.telas.fragments.SemAulasHojeParaDisciplina;
+import com.example.marcello.tomadordefrequencia.model.Aluno;
 import com.example.marcello.tomadordefrequencia.model.Aula;
+import com.example.marcello.tomadordefrequencia.model.Matriculas;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,13 +39,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created by marcello on 6/14/18.
@@ -103,6 +105,7 @@ public class ProximaDisciplina extends AppCompatActivity {
         loginProfessorFragment.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 inputIntent.putExtra("TYPE", "PASSWORD");
+                inputIntent.putExtra("PARA_VERIFICAR", COD_DISCIPLINA_ATUAL);
                 inputIntent.putExtra("HINT_INPUT", "Digite o código de acesso");
                 startActivityForResult(inputIntent, RESULTADO_CODIGO_DISCIPLINA);
             }
@@ -118,14 +121,16 @@ public class ProximaDisciplina extends AppCompatActivity {
         if (requestCode == RESULTADO_CODIGO_DISCIPLINA) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                if(data.getStringExtra("resposta").equals(COD_DISCIPLINA_ATUAL)){
+//                if(data.getStringExtra("resposta").equals(COD_DISCIPLINA_ATUAL)){
                     Intent telaProfessor = new Intent(this, LiberaInOutProfessor.class);
                     telaProfessor.putExtra("CODIGO_DISCIPLINA", COD_DISCIPLINA_ATUAL);
                     telaProfessor.putExtra("STATUS_ATUAL", String.valueOf(STATUS_ATUAL));
                     telaProfessor.putExtra("CODIGO_TOMADOR_SALA", TOMADOR_ATUAL_EM_USO);
                     telaProfessor.putExtra("ID_AULA", idDaProximaAula);
                     startActivity(telaProfessor);
-                }
+//                }
+//                else
+
             }
         }
     }
@@ -177,7 +182,7 @@ public class ProximaDisciplina extends AppCompatActivity {
                             if (contador == ultimaVez && proximaAula != null) {
                                 TextView hora = findViewById(R.id.horaProximaAula);
                                 hora.setText(horaQueComecaProximaAula);
-                                controlaStatusDaAula(idDaProximaAula);
+                                controlaStatusDaAula();
                             }
                             contador--;
                         }
@@ -199,8 +204,8 @@ public class ProximaDisciplina extends AppCompatActivity {
 
     }
 
-    private void controlaStatusDaAula(String aula) {
-        mDatabase.child("/disciplinas/"+COD_DISCIPLINA_ATUAL+"/aulas/"+ ANO+"/"+MES+"/"+DIA+"/"+aula).
+    private void controlaStatusDaAula() {
+        mDatabase.child("/disciplinas/"+COD_DISCIPLINA_ATUAL+"/aulas/"+ ANO+"/"+MES+"/"+DIA+"/"+idDaProximaAula).
                 addValueEventListener(new ValueEventListener() {
 
                     Aula dsAula = new Aula();
@@ -212,9 +217,6 @@ public class ProximaDisciplina extends AppCompatActivity {
                       @Override
                       public void onDataChange(DataSnapshot dataSnapshot) {
                           Bundle bundle = new Bundle();
-                          AindaNaoComecou aindaNaoComecouTest = (AindaNaoComecou) getFragmentManager().findFragmentByTag("aindaNaoComecou");
-                          EmProcessoAula emProcessoAulaTest = (EmProcessoAula) getFragmentManager().findFragmentByTag("emProcesso");
-                          FimDoProcesso fimDoProcessoTest = (FimDoProcesso) getFragmentManager().findFragmentByTag("fimDoProcesso");
 
                           FragmentTransaction ft = getFragmentManager().beginTransaction();
                           dsAula = dataSnapshot.getValue(Aula.class);
@@ -227,25 +229,23 @@ public class ProximaDisciplina extends AppCompatActivity {
                           Object aux2 = ((HashMap) checkout).get("status");
                           int statusAulaCheckout = ((Long) aux2).intValue();
                           switch (statusAulaCheckin) {
-                              case 0: //ainda nao comecou
+                              case 0:
                                   aindaNaoComecou = new AindaNaoComecou();
                                   ft.replace(R.id.espaçoParaColocarFragment, aindaNaoComecou, "aindaNaoComecou");
                                   STATUS_ATUAL = CHECKIN_AINDA_NAO_COMECOU;
                                   bundle.putString("checkinOuCheckout", "checkin");
                                   podeLerNfcAgora = false;
                                   aindaNaoComecou.setArguments(bundle);
-//                                  if(aindaNaoComecouTest==null)
                                   break;
-                              case 1: //em andamento
+                              case 1:
                                   emProcesso = new EmProcessoAula();
                                   ft.replace(R.id.espaçoParaColocarFragment, emProcesso, "emProcesso");
                                   STATUS_ATUAL = CHECKIN_EM_PROCESSO;
                                   bundle.putString("checkinOuCheckout", "checkin");
                                   podeLerNfcAgora = true;
                                   emProcesso.setArguments(bundle);
-//                                  if(emProcessoAulaTest==null)
                                   break;
-                              case 2: //encerrado
+                              case 2:
                                   switch (statusAulaCheckout) {
                                       case 0:
                                           fimDoProcesso = new FimDoProcesso();
@@ -254,16 +254,14 @@ public class ProximaDisciplina extends AppCompatActivity {
                                           bundle.putString("checkinOuCheckout", "checkin");
                                           podeLerNfcAgora = false;
                                           fimDoProcesso.setArguments(bundle);
-//                                          if(fimDoProcessoTest ==null)
-                                          break;
+//                                        break;
                                       case 1:
                                           emProcesso = new EmProcessoAula();
                                           ft.replace(R.id.espaçoParaColocarFragment, emProcesso, "emProcesso");
                                           STATUS_ATUAL = CHECKOUT_EM_PROCESSO;
                                           bundle.putString("checkinOuCheckout", "checkout");
                                           podeLerNfcAgora = true;
-//                                          if(emProcessoAulaTest ==null)
-                                          emProcesso.setArguments(bundle);
+//                                        emProcesso.setArguments(bundle);
                                           break;
                                       case 2:
                                           fimDoProcesso = new FimDoProcesso();
@@ -272,8 +270,7 @@ public class ProximaDisciplina extends AppCompatActivity {
                                           bundle.putString("checkinOuCheckout", "checkout");
                                           podeLerNfcAgora = false;
                                           fimDoProcesso.setArguments(bundle);
-//                                          if(fimDoProcessoTest ==null)
-                                          break;
+//                                        break;
                                   }
                                   break;
                           }
@@ -297,7 +294,7 @@ public class ProximaDisciplina extends AppCompatActivity {
         }
         Toast.makeText(this, "Agora sim", Toast.LENGTH_LONG).show();
         try {
-            getTagInfo(intent);
+            getTagId(intent);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -306,13 +303,110 @@ public class ProximaDisciplina extends AppCompatActivity {
         super.onNewIntent(intent);
     }
 
-    private void getTagInfo(Intent intent) throws IOException, JSONException {
+    private void getTagId(Intent intent) throws IOException, JSONException {
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         byte[] idStudent = tag.getId();
-//        tag.describeContents()
 
-//        registraPresencaParaAluno(idStudent);
+        ArrayList nfc_id_array = new ArrayList();
+        for(byte item: idStudent){
+            nfc_id_array.add(item);
+        }
+        String nfc_id_aux = nfc_id_array.toString();
+        String nfc_id = nfc_id_aux.replaceAll("[\\[\\] ]", "");
+        verificarSeAlunoExisteNaDisciplinaNfcId(nfc_id);
     }
+
+    private void verificarSeAlunoExisteNaDisciplinaNfcId(String nfc_id) {
+        mDatabase.child("/disciplinas/"+COD_DISCIPLINA_ATUAL+"/alunos").addValueEventListener(new ValueEventListener() {
+//            @Override
+            Fragment identificacaoAluno;
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot aluno: dataSnapshot.getChildren()){
+                    Aluno alunoDb = aluno.getValue(Aluno.class);
+                    if(alunoDb.nfc_id != null){
+                        if(alunoDb.nfc_id.equals(nfc_id)) {
+                            String matriculaDoAluno = aluno.getKey();
+                            Toast.makeText(getBaseContext(), ""+matriculaDoAluno, Toast.LENGTH_LONG).show();
+                            verificaSeJaNaoFoiInserido(matriculaDoAluno);
+                            break;
+                        } else {
+//                            FragmentTransaction ft = getFragmentManager().beginTransaction();
+//                            identificacaoAluno = new IdentificacaoAluno();
+//                            ft.replace(R.id.espaçoParaColocarFragment, identificacaoAluno);
+//                            Bundle bundle = new Bundle();
+//                            bundle.putString("IDENTIFICACAO", "Aluno(a) não encontrado(a)");
+//                            identificacaoAluno.setArguments(bundle);
+//                            ft.commitAllowingStateLoss();
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+    }
+
+    public void verificarSeAlunoExisteNaDisciplinaMatricula(String matricula) {
+        mDatabase.child("/disciplinas/"+COD_DISCIPLINA_ATUAL+"/alunos/"+matricula).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChildren()){
+                    verificaSeJaNaoFoiInserido(matricula);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+    }
+    private void verificaSeJaNaoFoiInserido(String matriculaDoAluno) {
+        String qualProcesso = STATUS_ATUAL==CHECKIN_EM_PROCESSO?"checkin":"checkout";
+        mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA + "/" + idDaProximaAula+"/"+qualProcesso+"/alunos").
+            addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    long count = dataSnapshot.getChildrenCount();
+                    boolean jaFoiInserido = false;
+                    for(DataSnapshot ds: dataSnapshot.getChildren()){
+                        Object matricula = ds.getValue();
+                        if(String.valueOf(matricula).equals(matriculaDoAluno)){
+                            jaFoiInserido = true;
+                        }
+                    }
+                    if(!jaFoiInserido)
+                        registrarPresencaNesteProcessoParaAluno(matriculaDoAluno);
+                    else Toast.makeText(getBaseContext(), "Você já realizou "+qualProcesso, Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+        });
+    }
+
+    private void registrarPresencaNesteProcessoParaAluno(String matriculaDoAluno) {
+        DatabaseReference aulaProcesso = mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA + "/" + idDaProximaAula);
+        DatabaseReference listaAlunos = null;
+        String idxAlunoPresente;
+        switch (STATUS_ATUAL) {
+            case CHECKIN_EM_PROCESSO:
+                listaAlunos = aulaProcesso.child("/checkin/alunos").getRef();
+                break;
+            case CHECKOUT_EM_PROCESSO:
+                listaAlunos = aulaProcesso.child("/checkout/alunos").getRef();
+                break;
+        }
+        idxAlunoPresente = listaAlunos.push().getKey();
+        Map<String, Object> mapAluno = new HashMap<>();
+        mapAluno.put(idxAlunoPresente, matriculaDoAluno);
+        listaAlunos.updateChildren(mapAluno);
+
+    }
+
     @Override
     protected void onResume(){
 

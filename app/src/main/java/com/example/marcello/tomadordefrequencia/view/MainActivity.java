@@ -93,8 +93,8 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
         pegaDisciplinas();
 
 
-        dialog = ProgressDialog.show(this, "",
-                "Carregando disciplinas...", true);
+//        dialog = ProgressDialog.show(this, "",
+//                "Carregando disciplinas...", true);
 
         // professor clicou para entrar na disciplina:
             // inserirCodDisciplina
@@ -177,7 +177,7 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
                 intent.putExtra("DISCIPLINA_NOME_PROFESSOR", proximaDisciplina.nomeProfessor);
                 intent.putExtra("TOMADOR_ATUAL", tomadorEmUso);
                 startActivity(intent);
-                dialog.cancel();
+//                dialog.cancel();
                 finish();
             } else {
                 Intent intent = new Intent(this, NaoTemMaisDisciplinaHoje.class);

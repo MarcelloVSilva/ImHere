@@ -12,25 +12,60 @@
           },
           "alunos": {
             "201307514":{
-              "":{}
+              "nome": "ADRIEL FERREIRA ROSA"
             },
-          "201307078",
-          "201301655",
-          "201307083",
-          "201301657",
-          "201307085",
-          "201100387",
-          "201301660",
-          "201300566",
-          "201307838",
-          "201305758",
-          "201300216",
-          "201301663",
-          "201301664",
-          "201301675",
-          "201301677",
-          "201307530",
-          "201302582"
+            "201307078":{
+              "nome": "ALEXANDRE PINHEIRO DE SANTANA"
+            },
+            "201301655":{
+              "nome": "ANDRE LUIS SOARES ALVES"
+            },
+            "201307083":{
+              "nome": "BRENO CARDOSO BRAGA"
+            },
+            "201301657": {
+              "nome": "CARLOS HENRIQUE JOSÉ DE OLIVEIRA"
+            },
+            "201307085":{
+              "nome": "DANIEL ALMEIDA CAVALCANTE"
+            },
+            "201100387":{
+              "nome": "DEBORA DOS SANTOS E SILVA",
+              "nfc_id": "92:73:-47:56"
+            },
+            "201301660":{
+              "nome": "EDUARDO MACEDO SANTOS"
+            },
+            "201300566":{
+              "nome": "EURIDES PINHEIRO DE SOUSA JUNIOR"
+            },
+            "201307838":{
+              "nome": "FERNANDO BRITO RODRIGUES"
+            },
+            "201305758":{
+              "nome": "GABRIEL DA TRINDADE TEIJEIRO"
+            },
+            "201300216":{
+              "nome": "GABRIEL HAMADA SANTALUCIA"
+            },
+            "201301663":{
+              "nome": "GUILHERME DE ALMEIDA SILVA"
+            },
+            "201301664":{
+              "nome": "GUSTHAVO ABREU BATISTA"
+            },
+            "201301675":{
+              "nome": "LUCAS SOARES BENTO"
+            },
+            "201301677":{
+              "nome": "MARCELLO VICTOR COSTA E SILVA"
+            },
+            "201307530":{
+              "nome": "MATHEUS CAMPOS DE OLIVEIRA"
+            },
+            "201302582":{
+              "nome": "MATHEUS MACHADO GALHARDO"
+            }
         },
             "aulas": {
               "2018": {
@@ -137,14 +172,63 @@
             "horarioDeInicioAula": {
                 "4":"18:50"
             },
-            "alunos": [
-                "201307514", "201307078", "201301655",
-                "201307083", "201301657", "201307085",
-                "201100387", "201301660", "201300566",
-                "201307838", "201305758", "201300216",
-                "201301663", "201301664", "201301675",
-                "201301677", "201307530", "201302582"
-            ],
+            "alunos": {
+              "201307514":{
+                "nome": "ADRIEL FERREIRA ROSA"
+              },
+              "201307078":{
+                "nome": "ALEXANDRE PINHEIRO DE SANTANA"
+              },
+              "201301655":{
+                "nome": "ANDRE LUIS SOARES ALVES"
+              },
+              "201307083":{
+                "nome": "BRENO CARDOSO BRAGA"
+              },
+              "201301657": {
+                "nome": "CARLOS HENRIQUE JOSÉ DE OLIVEIRA"
+              },
+              "201307085":{
+                "nome": "DANIEL ALMEIDA CAVALCANTE"
+              },
+              "201100387":{
+                "nome": "DEBORA DOS SANTOS E SILVA",
+                "nfc_id": "92:73:-47:56"
+              },
+              "201301660":{
+                "nome": "EDUARDO MACEDO SANTOS"
+              },
+              "201300566":{
+                "nome": "EURIDES PINHEIRO DE SOUSA JUNIOR"
+              },
+              "201307838":{
+                "nome": "FERNANDO BRITO RODRIGUES"
+              },
+              "201305758":{
+                "nome": "GABRIEL DA TRINDADE TEIJEIRO"
+              },
+              "201300216":{
+                "nome": "GABRIEL HAMADA SANTALUCIA"
+              },
+              "201301663":{
+                "nome": "GUILHERME DE ALMEIDA SILVA"
+              },
+              "201301664":{
+                "nome": "GUSTHAVO ABREU BATISTA"
+              },
+              "201301675":{
+                "nome": "LUCAS SOARES BENTO"
+              },
+              "201301677":{
+                "nome": "MARCELLO VICTOR COSTA E SILVA"
+              },
+              "201307530":{
+                "nome": "MATHEUS CAMPOS DE OLIVEIRA"
+              },
+              "201302582":{
+                "nome": "MATHEUS MACHADO GALHARDO"
+              }
+            },
             "aulas": {
                 "2018":{
                     "4":{
@@ -251,26 +335,61 @@
           "horarioDeInicioAula": {
             "3": "18:50"
           },
-          "alunos": [
-            "201307514",
-            "201307078",
-            "201301655",
-            "201307083",
-            "201301657",
-            "201307085",
-            "201100387",
-            "201301660",
-            "201300566",
-            "201307838",
-            "201305758",
-            "201300216",
-            "201301663",
-            "201301664",
-            "201301675",
-            "201301677",
-            "201307530",
-            "201302582"
-          ],
+          "alunos": {"201307514":{
+            "nome": "ADRIEL FERREIRA ROSA"
+          },
+            "201307078":{
+              "nome": "ALEXANDRE PINHEIRO DE SANTANA"
+            },
+            "201301655":{
+              "nome": "ANDRE LUIS SOARES ALVES"
+            },
+            "201307083":{
+              "nome": "BRENO CARDOSO BRAGA"
+            },
+            "201301657": {
+              "nome": "CARLOS HENRIQUE JOSÉ DE OLIVEIRA"
+            },
+            "201307085":{
+              "nome": "DANIEL ALMEIDA CAVALCANTE"
+            },
+            "201100387":{
+              "nome": "DEBORA DOS SANTOS E SILVA",
+              "nfc_id": "92:73:-47:56"
+            },
+            "201301660":{
+              "nome": "EDUARDO MACEDO SANTOS"
+            },
+            "201300566":{
+              "nome": "EURIDES PINHEIRO DE SOUSA JUNIOR"
+            },
+            "201307838":{
+              "nome": "FERNANDO BRITO RODRIGUES"
+            },
+            "201305758":{
+              "nome": "GABRIEL DA TRINDADE TEIJEIRO"
+            },
+            "201300216":{
+              "nome": "GABRIEL HAMADA SANTALUCIA"
+            },
+            "201301663":{
+              "nome": "GUILHERME DE ALMEIDA SILVA"
+            },
+            "201301664":{
+              "nome": "GUSTHAVO ABREU BATISTA"
+            },
+            "201301675":{
+              "nome": "LUCAS SOARES BENTO"
+            },
+            "201301677":{
+              "nome": "MARCELLO VICTOR COSTA E SILVA"
+            },
+            "201307530":{
+              "nome": "MATHEUS CAMPOS DE OLIVEIRA"
+            },
+            "201302582":{
+              "nome": "MATHEUS MACHADO GALHARDO"
+            }},
           "aulas": {
             "2018": {
               "4": {
@@ -389,7 +508,8 @@
             "nome": "DANIEL ALMEIDA CAVALCANTE"
         },
         "201100387":{
-            "nome": "DEBORA DOS SANTOS E SILVA"
+            "nome": "DEBORA DOS SANTOS E SILVA",
+            "nfc_id": "92:73:-47:56"
         },
         "201301660":{
             "nome": "EDUARDO MACEDO SANTOS"
@@ -423,12 +543,6 @@
         },
         "201302582":{
             "nome": "MATHEUS MACHADO GALHARDO"
-        }
-    },
-    "alunos_hash_id":{
-        "aqui_vira_o_id_do_cartao_nfc":{
-            "matricula": "201100387",
-            "nome": "DEBORA DOS SANTOS E SILVA"
         }
     },
     "professores": {
