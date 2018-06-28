@@ -1,14 +1,10 @@
 package com.example.marcello.tomadordefrequencia.componentes.telas.fragments;
 
 
-import android.annotation.TargetApi;
 import android.app.Fragment;
-import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -43,14 +39,14 @@ public class EmProcessoAula extends Fragment {
     private DatabaseReference mDatabase;
     private NfcAdapter nfcAdapter;
     private String COD_DISCIPLINA_ATUAL;
-    private int STATUS_ATUAL = ((ProximaDisciplina)getActivity()).STATUS_ATUAL;
+    private int STATUS_ATUAL;
     private final int CHECKIN_EM_PROCESSO = 10;
     private final int CHECKOUT_EM_PROCESSO = 21;
-    private DatabaseReference listaDeAlunosSync;
+    private DatabaseReference referenciaDeAlunosSincronaComFb;
     private int ANO;
     private int MES;
     private int DIA;
-    private String idDaProximaAula;
+    private String idAulaAtual;
 
     @Nullable
     @Override
@@ -65,6 +61,7 @@ public class EmProcessoAula extends Fragment {
         MES = ((ProximaDisciplina)getActivity()).MES;
         DIA = ((ProximaDisciplina)getActivity()).DIA;
         COD_DISCIPLINA_ATUAL = ((ProximaDisciplina)getActivity()).COD_DISCIPLINA_ATUAL;
+        idAulaAtual = ((ProximaDisciplina) getActivity()).idDaProximaAula;
 
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -78,13 +75,13 @@ public class EmProcessoAula extends Fragment {
             }
         });
 
-        String qualProcesso = STATUS_ATUAL==CHECKIN_EM_PROCESSO?"checkin":"checkout";
-        listaDeAlunosSync = mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA + "/" + idDaProximaAula+"/"+qualProcesso+"/alunos");
+        String qualProcessoAtual = STATUS_ATUAL==CHECKIN_EM_PROCESSO?"checkin":"checkout";
+        referenciaDeAlunosSincronaComFb = mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA + "/" + idAulaAtual +"/"+qualProcessoAtual+"/alunos");
 
-        listaDeAlunosSync.addValueEventListener(new ValueEventListener() {
+        referenciaDeAlunosSincronaComFb.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
+                dataSnapshot.getValue();
             }
 
             @Override
@@ -93,7 +90,7 @@ public class EmProcessoAula extends Fragment {
             }
         });
 
-        listaDeAlunosSync.keepSynced(true);
+        referenciaDeAlunosSincronaComFb.keepSynced(true);
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
         return view;
@@ -169,12 +166,12 @@ public class EmProcessoAula extends Fragment {
 
     }
     private void verificaSeJaNaoFoiInserido(String matriculaDoAluno) {
-
+        DatabaseReference d = referenciaDeAlunosSincronaComFb;
 
     }
 
     private void registrarPresencaNesteProcessoParaAluno(String matriculaDoAluno) {
-        DatabaseReference aulaProcesso = mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA + "/" + idDaProximaAula);
+        DatabaseReference aulaProcesso = mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA + "/" + idAulaAtual);
         DatabaseReference listaAlunos = null;
         String idxAlunoPresente;
         switch (STATUS_ATUAL) {

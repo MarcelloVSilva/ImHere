@@ -67,7 +67,7 @@ public class ProximaDisciplina extends AppCompatActivity {
     public final int CHECKOUT_EM_PROCESSO = 21;
     public final int CHECKOUT_ENCERRADO  = 22;
     public final int SEM_AULA = 99;
-    private String idDaProximaAula;
+    public String idDaProximaAula;
     private DatabaseReference listaDeAlunosSync;
 
     protected void onCreate(Bundle savedInstanceState) {
