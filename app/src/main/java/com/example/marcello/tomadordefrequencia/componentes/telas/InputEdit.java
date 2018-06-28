@@ -44,12 +44,9 @@ public class InputEdit extends AppCompatActivity {
         confirmabtn.setOnClickListener((v)->{
             Intent devolve = new Intent();
             String resposta = String.valueOf(respostaCampo.getText());
-            if(resposta.equals("")) Toast.makeText(this, "Insira o código da disciplina", Toast.LENGTH_LONG).show();
-            else if(verificar != null && resposta.equals(verificar)) {
-                devolve.putExtra("resposta", resposta);
-                setResult(RESULT_OK, devolve);
-                finish();
-            }else Toast.makeText(this, "Código errado", Toast.LENGTH_LONG).show();
+            devolve.putExtra("resposta", resposta);
+            setResult(RESULT_OK, devolve);
+            finish();
         });
 
     }

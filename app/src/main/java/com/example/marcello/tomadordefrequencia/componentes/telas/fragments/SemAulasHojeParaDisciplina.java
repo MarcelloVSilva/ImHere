@@ -10,10 +10,6 @@ import android.view.ViewGroup;
 
 import com.example.marcello.tomadordefrequencia.R;
 
-/**
- * Created by marcello on 6/14/18.
- */
-
 public class SemAulasHojeParaDisciplina  extends Fragment {
 
     @Nullable

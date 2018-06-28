@@ -1,8 +1,10 @@
 package com.example.marcello.tomadordefrequencia.view;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -19,6 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.example.marcello.tomadordefrequencia.model.Tomador;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -70,6 +73,7 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
 
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         tomadorEmUso = "cac209";
 
         SimpleDateFormat date = new SimpleDateFormat("EEEE");
@@ -205,4 +209,7 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
         startActivity(intent);
         finish();
     }
+
+
+
 }
