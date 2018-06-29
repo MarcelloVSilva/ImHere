@@ -49,6 +49,7 @@ public class EmProcessoAula extends Fragment {
     private String idAulaAtual;
     private TextView campoMatricula;
     private String processoAtualEmAndamento;
+    private Numpad numpad;
 
     @Nullable
     @Override
@@ -77,7 +78,7 @@ public class EmProcessoAula extends Fragment {
             }
         });
 
-        final Numpad numpad = view.findViewById(R.id.num);
+        numpad = view.findViewById(R.id.num);
         campoMatricula = view.findViewById(R.id.matriculaDigitaDial);
         campoMatricula.setHint("Digite sua matrícula");
         numpad.setOnTextChangeListner((String text, int digits_remaining) -> {
@@ -192,8 +193,7 @@ public class EmProcessoAula extends Fragment {
     }
 
     private void alunoJaFoiInserido() {
-        Toast.makeText(getActivity(), "Você já se registrou nesse processo", Toast.LENGTH_LONG).show();
-        campoMatricula.setText("");
+        Toast.makeText(getActivity(), "Você já fez "+processoAtualEmAndamento, Toast.LENGTH_LONG).show();
     }
 
     private void registrarPresencaNesteProcessoParaAluno(String matriculaDoAluno) {
@@ -201,7 +201,7 @@ public class EmProcessoAula extends Fragment {
         Map<String, Object> mapAluno = new HashMap<>();
         mapAluno.put(matriculaDoAluno, true);
         referenciaDeAlunosSincronaComFb.updateChildren(mapAluno);
-        Toast.makeText(getActivity(), "Você já se registrou nesse processo", Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity(), ""+processoAtualEmAndamento+" registrado", Toast.LENGTH_LONG).show();
 
     }
 
