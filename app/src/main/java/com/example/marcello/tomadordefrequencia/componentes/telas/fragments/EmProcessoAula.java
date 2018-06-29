@@ -18,6 +18,7 @@ import com.example.marcello.tomadordefrequencia.R;
 import com.example.marcello.tomadordefrequencia.componentes.telas.InputEdit;
 import com.example.marcello.tomadordefrequencia.componentes.telas.ProximaDisciplina;
 import com.example.marcello.tomadordefrequencia.model.Aluno;
+import com.fxn769.Numpad;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -47,6 +48,7 @@ public class EmProcessoAula extends Fragment {
     private int MES;
     private int DIA;
     private String idAulaAtual;
+    private TextView campoMatricula;
 
     @Nullable
     @Override
@@ -54,7 +56,7 @@ public class EmProcessoAula extends Fragment {
         View view =  inflater.inflate(R.layout.em_processo_fragment, container, false);
         Button inserirMatriculaBtn = view.findViewById(R.id.inserirMatricula);
         TextView titulo = view.findViewById(R.id.tituloEmProcesso);
-//        titulo.setText(this.getArguments().getString("checkinOuCheckout")+" liberado");
+        titulo.setText(this.getArguments().getString("checkinOuCheckout")+" liberado");
 
         STATUS_ATUAL = ((ProximaDisciplina)getActivity()).STATUS_ATUAL;
         ANO = ((ProximaDisciplina)getActivity()).ANO;
@@ -76,9 +78,11 @@ public class EmProcessoAula extends Fragment {
         });
 
         String qualProcessoAtual = STATUS_ATUAL==CHECKIN_EM_PROCESSO?"checkin":"checkout";
-        referenciaDeAlunosSincronaComFb = mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA + "/" + idAulaAtual +"/"+qualProcessoAtual+"/alunos");
+        referenciaDeAlunosSincronaComFb = mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA + "/" + idAulaAtual +"/"+qualProcessoAtual+"/alunos").getRef();
+        referenciaDeAlunosSincronaComFb.keepSynced(true);
 
-        referenciaDeAlunosSincronaComFb.addValueEventListener(new ValueEventListener() {
+        mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA + "/" + idAulaAtual +"/"+qualProcessoAtual+"/alunos")
+                .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 dataSnapshot.getValue();
@@ -90,17 +94,38 @@ public class EmProcessoAula extends Fragment {
             }
         });
 
-        referenciaDeAlunosSincronaComFb.keepSynced(true);
-
+        final Numpad numpad = view.findViewById(R.id.num);
+        campoMatricula = view.findViewById(R.id.matriculaDigitaDial);
+        numpad.setOnTextChangeListner((String text, int digits_remaining) -> {
+            campoMatricula.setText(text);
+        });
         nfcAdapter = NfcAdapter.getDefaultAdapter(getActivity());
         return view;
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        String qualProcessoAtual = STATUS_ATUAL==CHECKIN_EM_PROCESSO?"checkin":"checkout";
+        referenciaDeAlunosSincronaComFb = mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA + "/" + idAulaAtual +"/"+qualProcessoAtual+"/alunos").getRef();
+        referenciaDeAlunosSincronaComFb.keepSynced(true);
+
+        referenciaDeAlunosSincronaComFb.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        dataSnapshot.getValue();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Check which request we're responding to
         if (requestCode == RESULTADO_MATRICULA_ALUNO) {
-            // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 String matricula = data.getStringExtra("resposta");
                 if(!matricula.equals(""))
@@ -133,7 +158,6 @@ public class EmProcessoAula extends Fragment {
                     if(alunoDb.nfc_id != null){
                         if(alunoDb.nfc_id.equals(nfc_id)) {
                             String matriculaDoAluno = aluno.getKey();
-                            Toast.makeText(getActivity(), ""+matriculaDoAluno, Toast.LENGTH_LONG).show();
                             verificaSeJaNaoFoiInserido(matriculaDoAluno);
                             break;
                         } else alunoNaoExisteNaDisciplina();
@@ -166,29 +190,26 @@ public class EmProcessoAula extends Fragment {
 
     }
     private void verificaSeJaNaoFoiInserido(String matriculaDoAluno) {
-        DatabaseReference d = referenciaDeAlunosSincronaComFb;
+        referenciaDeAlunosSincronaComFb.child(matriculaDoAluno).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists())
+                    registrarPresencaNesteProcessoParaAluno(matriculaDoAluno);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
     private void registrarPresencaNesteProcessoParaAluno(String matriculaDoAluno) {
-        DatabaseReference aulaProcesso = mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA + "/" + idAulaAtual);
-        DatabaseReference listaAlunos = null;
-        String idxAlunoPresente;
-        switch (STATUS_ATUAL) {
-            case CHECKIN_EM_PROCESSO:
-                listaAlunos = aulaProcesso.child("/checkin").getRef();
-                break;
-            case CHECKOUT_EM_PROCESSO:
-                listaAlunos = aulaProcesso.child("/checkout").getRef();
-                break;
-        }
-        ArrayList arrL =new ArrayList<>();
-        arrL.add("teste");
-        arrL.add("teste2");
 
         Map<String, Object> mapAluno = new HashMap<>();
-        mapAluno.put("alunos", arrL);
-        listaAlunos.updateChildren(mapAluno);
+        mapAluno.put(matriculaDoAluno, true);
+        referenciaDeAlunosSincronaComFb.updateChildren(mapAluno);
 
     }
 

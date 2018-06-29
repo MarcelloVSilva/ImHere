@@ -106,7 +106,7 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                 Disciplina disciplina = dataSnapshot.getValue(Disciplina.class);
                 nomeDisciplina.setText(disciplina.nome);
                 nomeProfessor.setText(disciplina.nomeProfessor);
-//                detalhes4.setText("Quantidade de alunos: "+String.valueOf(((ArrayList) disciplina.alunos).size()));
+                detalhes4.setText("Quantidade de alunos: "+String.valueOf(((HashMap) disciplina.alunos).size()));
             }
 
             @Override
@@ -139,7 +139,6 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         tempo_processo_aberto = 0;
-
                         DatabaseReference diaAulaRef = diaAula.getRef();
                         String key = diaAulaRef.push().getKey();
                         Map<String, Object> checkin = new HashMap<>();
@@ -155,20 +154,6 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                         diaAula.child("/"+key).setValue(novaAula);
                         finish();
 
-//                        if(check_tempo_limite.isChecked()){
-//                            int delayMillis = Integer.parseInt(String.valueOf(tempo_definido.getText()));
-//                            tempo_processo_aberto = delayMillis*60*1000;
-//
-//                            runnableTimeProcess =  new android.os.Handler().postDelayed(
-//                                    new Runnable() {
-//                                        public void run() {
-//                                            Map<String, Object> status = new HashMap<>();
-//                                            status.put("status", 2);
-//                                            diaAula.child("/"+key+"/checkin").updateChildren(status);
-//                                        }
-//                                    },
-//                                    tempo_processo_aberto);
-//                        }
                     }
                 });
                 break;
@@ -181,20 +166,6 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                         Map<String, Object> status = new HashMap<>();
                         status.put("status", 1);
                         diaAula.child(idAulaAtual+"/checkin").updateChildren(status);
-//                        if(check_tempo_limite.isChecked()){
-//                            int delayMillis = Integer.parseInt(String.valueOf(tempo_definido.getText()));
-//                            tempo_processo_aberto = delayMillis*60*1000;
-//
-//                            runnableTimeProcess =  new android.os.Handler().postDelayed(
-//                                    new Runnable() {
-//                                        public void run() {
-//                                            Map<String, Object> status = new HashMap<>();
-//                                            status.put("status", 2);
-//                                            diaAula.child(idAulaAtual+"/checkin").updateChildren(status);
-//                                        }
-//                                    },
-//                                    tempo_processo_aberto);
-//                        }
                         finish();
                     }
                 });

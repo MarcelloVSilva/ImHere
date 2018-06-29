@@ -79,7 +79,6 @@ public class ProximaDisciplina extends AppCompatActivity {
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
         TOMADOR_ATUAL_EM_USO = getIntent().getStringExtra("TOMADOR_ATUAL");
 
-//        Date date = new Date(2018, 04, 03);
         Date date = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
@@ -110,9 +109,7 @@ public class ProximaDisciplina extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Check which request we're responding to
         if (requestCode == RESULTADO_CODIGO_DISCIPLINA) {
-            // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 if(data.getStringExtra("resposta").equals(COD_DISCIPLINA_ATUAL)){
                     Intent telaProfessor = new Intent(this, LiberaInOutProfessor.class);
@@ -122,7 +119,6 @@ public class ProximaDisciplina extends AppCompatActivity {
                     telaProfessor.putExtra("ID_AULA", idDaProximaAula);
                     startActivity(telaProfessor);
                 }
-//                else
 
             }
         }
@@ -221,6 +217,7 @@ public class ProximaDisciplina extends AppCompatActivity {
                           Object checkout = dsAula.checkout;
                           Object aux2 = ((HashMap) checkout).get("status");
                           int statusAulaCheckout = ((Long) aux2).intValue();
+                          findViewById(R.id.loginProfessor).setVisibility(View.VISIBLE);
                           switch (statusAulaCheckin) {
                               case 0:
                                   aindaNaoComecou = new AindaNaoComecou();
@@ -262,6 +259,7 @@ public class ProximaDisciplina extends AppCompatActivity {
                                           STATUS_ATUAL = CHECKIN_ENCERRADO;
                                           bundle.putString("checkinOuCheckout", "checkout");
                                           podeLerNfcAgora = false;
+                                          findViewById(R.id.loginProfessor).setVisibility(View.INVISIBLE);
                                           fimDoProcesso.setArguments(bundle);
                                         break;
                                   }
@@ -282,7 +280,7 @@ public class ProximaDisciplina extends AppCompatActivity {
     public void onNewIntent(Intent intent) {
         try {
             EmProcessoAula fragmentEmProcessoAula = (EmProcessoAula) getFragmentManager().findFragmentByTag("emProcesso");
-            if(fragmentEmProcessoAula != null){
+            if(podeLerNfcAgora){
                 fragmentEmProcessoAula.getTagId(intent);
             }
         } catch (IOException e) {
@@ -313,38 +311,4 @@ public class ProximaDisciplina extends AppCompatActivity {
         super.onPause();
     }
 
-
-
 }
-
-
-
-//        listaDeAlunosSync.child(matriculaDoAluno);
-
-
-
-
-
-
-
-//                addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(DataSnapshot dataSnapshot) {
-//                    long count = dataSnapshot.getChildrenCount();
-//                    boolean jaFoiInserido = false;
-//                    for(DataSnapshot ds: dataSnapshot.getChildren()){
-//                        Object matricula = ds.getValue();
-//                        if(String.valueOf(matricula).equals(matriculaDoAluno)){
-//                            jaFoiInserido = true;
-//                        }
-//                    }
-//                    if(!jaFoiInserido)
-//                        registrarPresencaNesteProcessoParaAluno(matriculaDoAluno);
-//                    else Toast.makeText(getBaseContext(), "Você já realizou "+qualProcesso, Toast.LENGTH_LONG).show();
-//                }
-//
-//                @Override
-//                public void onCancelled(DatabaseError databaseError) {
-//
-//                }
-//        });

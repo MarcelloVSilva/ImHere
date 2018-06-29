@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:numpad="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -16,6 +17,15 @@
         android:textSize="30sp"
         android:textStyle="bold" />
 
+    <ImageView
+        android:id="@+id/imageViewEmProcesso"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:layout_below="@+id/tituloEmProcesso"
+        android:layout_above="@+id/inserirMatricula"
+        android:layout_centerHorizontal="true"
+        app:srcCompat="@drawable/em_processo" />
+
     <Button
         android:id="@+id/inserirMatricula"
         android:layout_width="wrap_content"
@@ -27,12 +37,25 @@
         android:text="Inserir Matrícula"
         android:textSize="24sp" />
 
-    <ImageView
-        android:id="@+id/imageViewEmProcesso"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
+
+    <TextView
+        android:id="@+id/matriculaDigitaDial"
+        android:layout_width="wrap_content"
+        android:layout_height="86dp"
+        android:layout_above="@id/num"
+        android:layout_alignLeft="@id/num"
+        android:textSize="38dp" />
+
+
+    <com.fxn769.Numpad
+        android:id="@+id/num"
+        android:layout_width="300sp"
+        android:layout_height="400sp"
+        android:layout_alignParentBottom="true"
         android:layout_below="@+id/tituloEmProcesso"
-        android:layout_above="@+id/inserirMatricula"
-        android:layout_centerHorizontal="true"
-        app:srcCompat="@drawable/em_processo" />
+        android:layout_toRightOf="@id/imageViewEmProcesso"
+        numpad:numpad_grid_visible="true"
+        numpad:numpad_text_limit="12"
+        numpad:numpad_text_size="18sp" />
+
 </RelativeLayout>
