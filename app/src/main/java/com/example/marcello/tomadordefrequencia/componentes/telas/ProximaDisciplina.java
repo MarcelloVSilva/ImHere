@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,17 +16,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.marcello.tomadordefrequencia.R;
 import com.example.marcello.tomadordefrequencia.componentes.telas.fragments.AindaNaoComecou;
 import com.example.marcello.tomadordefrequencia.componentes.telas.fragments.EmProcessoAula;
 import com.example.marcello.tomadordefrequencia.componentes.telas.fragments.FimDoProcesso;
-import com.example.marcello.tomadordefrequencia.componentes.telas.fragments.IdentificacaoAluno;
 import com.example.marcello.tomadordefrequencia.componentes.telas.fragments.SemAulasHojeParaDisciplina;
-import com.example.marcello.tomadordefrequencia.model.Aluno;
 import com.example.marcello.tomadordefrequencia.model.Aula;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,11 +32,9 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 public class ProximaDisciplina extends AppCompatActivity {
     private static final int RESULTADO_CODIGO_DISCIPLINA = 1;
@@ -68,7 +61,6 @@ public class ProximaDisciplina extends AppCompatActivity {
     public final int CHECKOUT_ENCERRADO  = 22;
     public final int SEM_AULA = 99;
     public String idDaProximaAula;
-    private DatabaseReference listaDeAlunosSync;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -256,7 +248,7 @@ public class ProximaDisciplina extends AppCompatActivity {
                                       case 2:
                                           fimDoProcesso = new FimDoProcesso();
                                           ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso, "fimDoProcesso");
-                                          STATUS_ATUAL = CHECKIN_ENCERRADO;
+                                          STATUS_ATUAL = CHECKOUT_ENCERRADO;
                                           bundle.putString("checkinOuCheckout", "checkout");
                                           podeLerNfcAgora = false;
                                           findViewById(R.id.loginProfessor).setVisibility(View.INVISIBLE);

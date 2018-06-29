@@ -24,17 +24,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".componentes.telas.SemDisciplinasParaHoje"></activity>
+        <activity android:name=".componentes.telas.SemDisciplinasParaHoje" />
         <activity android:name=".componentes.telas.ProximaDisciplina">
             <intent-filter>
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
         <activity android:name=".componentes.telas.NaoTemMaisDisciplinaHoje" />
         <activity android:name=".componentes.telas.InputEdit" />
         <activity android:name=".componentes.telas.LiberaInOutProfessor" />
+        <activity android:name=".componentes.telas.ListaDisciplinasPorTomador"></activity>
     </application>
 
 </manifest>
