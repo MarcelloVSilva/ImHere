@@ -72,12 +72,10 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         tomadorEmUso = "cac209";
 
         SimpleDateFormat date = new SimpleDateFormat("EEEE");
-//        diaHoraAtual = new Date(2018, 05, 22);
         diaHoraAtual = new Date();
         diaDaSemanaHoje = date.format(diaHoraAtual);
 
@@ -96,18 +94,6 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
         super.onStart();
         pegaDisciplinas();
 
-
-//        dialog = ProgressDialog.show(this, "",
-//                "Carregando disciplinas...", true);
-
-        // professor clicou para entrar na disciplina:
-            // inserirCodDisciplina
-
-        // mostrar informaçoes disciplina:
-
-        // liberar checkin pelo tablet:
-
-        // liberar checkou pelo tablet:
 
         }
 

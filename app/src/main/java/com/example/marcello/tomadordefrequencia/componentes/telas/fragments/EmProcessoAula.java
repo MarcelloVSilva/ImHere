@@ -15,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.marcello.tomadordefrequencia.R;
-import com.example.marcello.tomadordefrequencia.componentes.telas.InputEdit;
 import com.example.marcello.tomadordefrequencia.componentes.telas.ProximaDisciplina;
 import com.example.marcello.tomadordefrequencia.model.Aluno;
 import com.fxn769.Numpad;
@@ -49,6 +48,7 @@ public class EmProcessoAula extends Fragment {
     private int DIA;
     private String idAulaAtual;
     private TextView campoMatricula;
+    private String processoAtualEmAndamento;
 
     @Nullable
     @Override
@@ -67,35 +67,19 @@ public class EmProcessoAula extends Fragment {
 
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        final Intent inputIntent = new Intent(getActivity(), InputEdit.class);
 
         inserirMatriculaBtn.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                inputIntent.putExtra("TYPE", "TEXT");
-                inputIntent.putExtra("HINT_INPUT", "Digite sua matrícula");
-                startActivityForResult(inputIntent, RESULTADO_MATRICULA_ALUNO);
-            }
-        });
-
-        String qualProcessoAtual = STATUS_ATUAL==CHECKIN_EM_PROCESSO?"checkin":"checkout";
-        referenciaDeAlunosSincronaComFb = mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA + "/" + idAulaAtual +"/"+qualProcessoAtual+"/alunos").getRef();
-        referenciaDeAlunosSincronaComFb.keepSynced(true);
-
-        mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA + "/" + idAulaAtual +"/"+qualProcessoAtual+"/alunos")
-                .addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                dataSnapshot.getValue();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
+                campoMatricula = view.findViewById(R.id.matriculaDigitaDial);
+                String matricula = String.valueOf(campoMatricula.getText());
+                if(!matricula.equals(""))
+                    verificarPorMatriculaSeAlunoExisteNaDisciplina(matricula);
             }
         });
 
         final Numpad numpad = view.findViewById(R.id.num);
         campoMatricula = view.findViewById(R.id.matriculaDigitaDial);
+        campoMatricula.setHint("Digite sua matrícula");
         numpad.setOnTextChangeListner((String text, int digits_remaining) -> {
             campoMatricula.setText(text);
         });
@@ -106,8 +90,8 @@ public class EmProcessoAula extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        String qualProcessoAtual = STATUS_ATUAL==CHECKIN_EM_PROCESSO?"checkin":"checkout";
-        referenciaDeAlunosSincronaComFb = mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA + "/" + idAulaAtual +"/"+qualProcessoAtual+"/alunos").getRef();
+        processoAtualEmAndamento = STATUS_ATUAL==CHECKIN_EM_PROCESSO?"checkin":"checkout";
+        referenciaDeAlunosSincronaComFb = mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA + "/" + idAulaAtual +"/"+ processoAtualEmAndamento +"/alunos").getRef();
         referenciaDeAlunosSincronaComFb.keepSynced(true);
 
         referenciaDeAlunosSincronaComFb.addValueEventListener(new ValueEventListener() {
@@ -171,10 +155,6 @@ public class EmProcessoAula extends Fragment {
 
     }
 
-    private void alunoNaoExisteNaDisciplina() {
-        Toast.makeText(getActivity(), "Aluno(a) não encontrado(a) :(", Toast.LENGTH_LONG).show();
-    }
-
     public void verificarPorMatriculaSeAlunoExisteNaDisciplina(String matricula) {
         mDatabase.child("/disciplinas/"+COD_DISCIPLINA_ATUAL+"/alunos/"+matricula).addValueEventListener(new ValueEventListener() {
             @Override
@@ -189,12 +169,18 @@ public class EmProcessoAula extends Fragment {
         });
 
     }
+
+    private void alunoNaoExisteNaDisciplina() {
+        Toast.makeText(getActivity(), "Aluno(a) não encontrado(a) :(", Toast.LENGTH_LONG).show();
+    }
+
     private void verificaSeJaNaoFoiInserido(String matriculaDoAluno) {
         referenciaDeAlunosSincronaComFb.child(matriculaDoAluno).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(!dataSnapshot.exists())
                     registrarPresencaNesteProcessoParaAluno(matriculaDoAluno);
+                else alunoJaFoiInserido();
             }
 
             @Override
@@ -205,11 +191,17 @@ public class EmProcessoAula extends Fragment {
 
     }
 
+    private void alunoJaFoiInserido() {
+        Toast.makeText(getActivity(), "Você já se registrou nesse processo", Toast.LENGTH_LONG).show();
+        campoMatricula.setText("");
+    }
+
     private void registrarPresencaNesteProcessoParaAluno(String matriculaDoAluno) {
 
         Map<String, Object> mapAluno = new HashMap<>();
         mapAluno.put(matriculaDoAluno, true);
         referenciaDeAlunosSincronaComFb.updateChildren(mapAluno);
+        Toast.makeText(getActivity(), "Você já se registrou nesse processo", Toast.LENGTH_LONG).show();
 
     }
 

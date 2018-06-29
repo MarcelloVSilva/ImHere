@@ -23,6 +23,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -82,6 +84,8 @@ public class LiberaInOutProfessor extends AppCompatActivity {
         MES = cal.get(Calendar.MONTH);
         DIA = cal.get(Calendar.DAY_OF_MONTH);
 
+
+
         liberarProcesso = findViewById(R.id.liberar_processo);
 
         check_tempo_limite = findViewById(R.id.check_tempo_limite);
@@ -138,6 +142,15 @@ public class LiberaInOutProfessor extends AppCompatActivity {
 
                     @Override
                     public void onClick(View view) {
+                        SimpleDateFormat formataData = new SimpleDateFormat("dd/MM/yyyy");
+                        String dataDaAulaHoje = new Date().toString();
+                        Date dataDaAulaHojeFormatada = null;
+                        try {
+                            dataDaAulaHojeFormatada = formataData.parse(dataDaAulaHoje);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
                         tempo_processo_aberto = 0;
                         DatabaseReference diaAulaRef = diaAula.getRef();
                         String key = diaAulaRef.push().getKey();
@@ -150,7 +163,7 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                         checkout.put("status", 0);
                         hora.put("fim", "23:59");
                         hora.put("inicio", "23:00");
-                        Aula novaAula = new Aula("25/06/2018", hora, "cac209", checkin, checkout);
+                        Aula novaAula = new Aula("", hora, codSala, checkin, checkout);
                         diaAula.child("/"+key).setValue(novaAula);
                         finish();
 
