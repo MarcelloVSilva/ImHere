@@ -2,9 +2,7 @@ package com.example.marcello.tomadordefrequencia.componentes.telas;
 
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -16,6 +14,7 @@ import android.widget.Toast;
 import com.example.marcello.tomadordefrequencia.R;
 import com.example.marcello.tomadordefrequencia.model.Aula;
 import com.example.marcello.tomadordefrequencia.model.Disciplina;
+import com.example.marcello.tomadordefrequencia.model.Processo;
 import com.example.marcello.tomadordefrequencia.model.Sala;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,15 +22,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class LiberaInOutProfessor extends AppCompatActivity {
+
+
+    Timer timer;
+    TimerTask timerTask;
 
     private String codDisciplina;
     private DatabaseReference mDatabase;
@@ -61,8 +64,11 @@ public class LiberaInOutProfessor extends AppCompatActivity {
     private EditText tempo_definido;
     private CheckBox check_tempo_limite;
 
-    public long tempo_processo_aberto;
+    public int tempo_processo_aberto;
     private String idAulaAtual;
+    private Calendar calendar;
+    private DatabaseReference referenciaDaDisciplinaHojeSincronaComFb;
+    private String processoAtual;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,17 +78,17 @@ public class LiberaInOutProfessor extends AppCompatActivity {
         idAulaAtual = getIntent().getStringExtra("ID_AULA");
         codSala= getIntent().getStringExtra("CODIGO_TOMADOR_SALA");
         Date date = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
+        calendar = Calendar.getInstance();
+        calendar.setTime(date);
 
         ImageButton back = findViewById(R.id.imageButtonBackFinishAct);
         back.setOnClickListener((v)->{
             finish();
         });
 
-        ANO = cal.get(Calendar.YEAR);
-        MES = cal.get(Calendar.MONTH);
-        DIA = cal.get(Calendar.DAY_OF_MONTH);
+        ANO = calendar.get(Calendar.YEAR);
+        MES = calendar.get(Calendar.MONTH);
+        DIA = calendar.get(Calendar.DAY_OF_MONTH);
 
 
 
@@ -103,7 +109,9 @@ public class LiberaInOutProfessor extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        DatabaseReference diaAula = mDatabase.child("/disciplinas/" + codDisciplina + "/aulas/" + ANO + "/" + MES + "/" + DIA);
+        referenciaDaDisciplinaHojeSincronaComFb = mDatabase.child("/disciplinas/" + codDisciplina + "/aulas/" + ANO + "/" + MES + "/" + DIA);
+        referenciaDaDisciplinaHojeSincronaComFb.keepSynced(true);
+
         mDatabase.child("/disciplinas/"+codDisciplina).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -143,28 +151,29 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         SimpleDateFormat formataData = new SimpleDateFormat("dd/MM/yyyy");
-                        String dataDaAulaHoje = new Date().toString();
-                        Date dataDaAulaHojeFormatada = null;
-                        try {
-                            dataDaAulaHojeFormatada = formataData.parse(dataDaAulaHoje);
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
+                        String dataDaAulaHoje = DIA+"/"+(MES+1)+"/"+ANO;
 
-                        tempo_processo_aberto = 0;
-                        DatabaseReference diaAulaRef = diaAula.getRef();
-                        String key = diaAulaRef.push().getKey();
-                        Map<String, Object> checkin = new HashMap<>();
-                        Map<String, Object> checkout = new HashMap<>();
+                        if(check_tempo_limite.isChecked()){
+                            processoAtual = "checkin";
+                            tempo_processo_aberto =  Integer.parseInt(String.valueOf(tempo_definido.getText()));
+                            iniciarTimerParaFecharProcesso(tempo_processo_aberto);
+                        }
+                        int hours = calendar.get(Calendar.HOUR_OF_DAY);
+                        int minutes = calendar.get(Calendar.MINUTE);
+                        DatabaseReference diaAulaRef = referenciaDaDisciplinaHojeSincronaComFb.getRef();
+                        idAulaAtual = diaAulaRef.push().getKey();
+
+                        Processo checkin =  new Processo();
+                        checkin.status = 1;
+                        checkin.podeLiberar = true;
+                        Processo checkout =  new Processo();
+                        checkout.status = 0;
+                        checkout.podeLiberar = false;
                         Map<String, Object> hora = new HashMap<>();
-                        checkin.put("podeLiberar", true);
-                        checkin.put("status", 1);
-                        checkout.put("podeLiberar", false);
-                        checkout.put("status", 0);
-                        hora.put("fim", "23:59");
-                        hora.put("inicio", "23:00");
-                        Aula novaAula = new Aula("", hora, codSala, checkin, checkout);
-                        diaAula.child("/"+key).setValue(novaAula);
+                        hora.put("fim", "");
+                        hora.put("inicio", hours+":"+minutes);
+                        Aula novaAula = new Aula(dataDaAulaHoje, hora, codSala, checkin, checkout);
+                        referenciaDaDisciplinaHojeSincronaComFb.child("/"+idAulaAtual).setValue(novaAula);
                         finish();
 
                     }
@@ -176,9 +185,14 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                 liberarProcesso.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        if(check_tempo_limite.isChecked()){
+                            processoAtual = "checkin";
+                            tempo_processo_aberto =  Integer.parseInt(String.valueOf(tempo_definido.getText()));
+                            iniciarTimerParaFecharProcesso(tempo_processo_aberto);
+                        }
                         Map<String, Object> status = new HashMap<>();
                         status.put("status", 1);
-                        diaAula.child(idAulaAtual+"/checkin").updateChildren(status);
+                        referenciaDaDisciplinaHojeSincronaComFb.child(idAulaAtual+"/checkin").updateChildren(status);
                         finish();
                     }
                 });
@@ -191,13 +205,18 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                 liberarProcesso.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        forcarParadaDoTimer(view);
+
+
+
                         Map<String, Object> statusCheckin = new HashMap<>();
                         Map<String, Object> statusCheckout = new HashMap<>();
                         statusCheckin.put("status", 2);
                         statusCheckin.put("podeLiberar", false);
                         statusCheckout.put("podeLiberar", true);
-                        diaAula.child(idAulaAtual+"/checkin").updateChildren(statusCheckin);
-                        diaAula.child(idAulaAtual+"/checkout").updateChildren(statusCheckout);
+                        forcarParadaDoTimer(view);
+                        referenciaDaDisciplinaHojeSincronaComFb.child(idAulaAtual+"/checkin").updateChildren(statusCheckin);
+                        referenciaDaDisciplinaHojeSincronaComFb.child(idAulaAtual+"/checkout").updateChildren(statusCheckout);
                         finish();
                     }
                 });
@@ -208,9 +227,14 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                 liberarProcesso.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        processoAtual = "checkout";
+                        if(check_tempo_limite.isChecked()){
+                            tempo_processo_aberto =  Integer.parseInt(String.valueOf(tempo_definido.getText()));
+                            iniciarTimerParaFecharProcesso(tempo_processo_aberto);
+                        }
                         Map<String, Object> status = new HashMap<>();
                         status.put("status", 1);
-                        diaAula.child(idAulaAtual+"/checkout").updateChildren(status);
+                        referenciaDaDisciplinaHojeSincronaComFb.child(idAulaAtual+"/checkout").updateChildren(status);
                         finish();
                     }
                 });
@@ -218,13 +242,22 @@ public class LiberaInOutProfessor extends AppCompatActivity {
             case CHECKOUT_EM_PROCESSO:
                 checkinOuCheckout.setText("Check-out");
                 liberarProcesso.setText("Finalizar checkout");
+                check_tempo_limite.setEnabled(false);
+                tempo_definido.setEnabled(false);
                 liberarProcesso.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        forcarParadaDoTimer(view);
+                        int hours = calendar.get(Calendar.HOUR_OF_DAY);
+                        int minutes = calendar.get(Calendar.MINUTE);
+
                         Map<String, Object> status = new HashMap<>();
+                        Map<String, Object> hora = new HashMap<>();
+                        hora.put("fim", hours+":"+minutes);
                         status.put("status", 2);
                         status.put("podeLiberar", false);
-                        diaAula.child(idAulaAtual+"/checkout").updateChildren(status);
+                        referenciaDaDisciplinaHojeSincronaComFb.child(idAulaAtual+"/hora").updateChildren(hora);
+                        referenciaDaDisciplinaHojeSincronaComFb.child(idAulaAtual+"/checkout").updateChildren(status);
                         finish();
 
                     }
@@ -235,6 +268,57 @@ public class LiberaInOutProfessor extends AppCompatActivity {
                 break;
         }
     }
+
+
+    public void iniciarTimerParaFecharProcesso(int tempoQueProcessoFicaraAberto) {
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                TimerMethod();
+            }
+        }, tempoQueProcessoFicaraAberto*1000*60);
+
+    }
+
+    public void forcarParadaDoTimer(View v) {
+        if (timer != null) {
+            timer.cancel();
+            Toast.makeText(getBaseContext(), "Parou timer", Toast.LENGTH_LONG).show();
+            timer = null;
+        }
+    }
+
+    private void TimerMethod() {
+        this.runOnUiThread(Timer_Tick);
+    }
+
+    private Runnable Timer_Tick = new Runnable() {
+        public void run() {
+            int hours = calendar.get(Calendar.HOUR_OF_DAY);
+            int minutes = calendar.get(Calendar.MINUTE);
+
+            Map<String, Object> status = new HashMap<>();
+            status.put("status", 2);
+            status.put("podeLiberar", false);
+
+            referenciaDaDisciplinaHojeSincronaComFb.child(idAulaAtual+"/"+processoAtual).updateChildren(status);
+            if(processoAtual.equals("checkin")){
+                Map<String, Object> statusCheckout = new HashMap<>();
+                statusCheckout.put("podeLiberar", true);
+                referenciaDaDisciplinaHojeSincronaComFb.child(idAulaAtual+"/checkout").updateChildren(statusCheckout);
+
+            }
+            if(processoAtual.equals("checkout")){
+                Map<String, Object> hora = new HashMap<>();
+                hora.put("fim", hours+":"+minutes);
+                referenciaDaDisciplinaHojeSincronaComFb.child(idAulaAtual+"/hora").updateChildren(hora);
+            }
+
+            Toast.makeText(getBaseContext(), processoAtual+" encerrado automaticamente", Toast.LENGTH_LONG).show();
+        }
+    };
+
 
 }
 

@@ -3,10 +3,12 @@ package com.example.marcello.tomadordefrequencia.view;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.marcello.tomadordefrequencia.R;
 import com.example.marcello.tomadordefrequencia.componentes.telas.ProximaDisciplina;
@@ -21,8 +23,11 @@ import com.example.marcello.tomadordefrequencia.model.Tomador;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +35,10 @@ import org.json.JSONObject;
 import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinasParaHoje;
 
     public class MainActivity extends ListActivity {
+
+
+    //we are going to use a handler to be able to run in our TimerTask
+    final Handler handler = new Handler();
 
     private DatabaseReference mDatabase;
     private String tomadorEmUso;
@@ -180,11 +189,11 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            if(!dataSnapshot.hasChildren())
+                            if (!dataSnapshot.hasChildren())
                                 abreIntentSemResultado();
-                            else for (DataSnapshot ds: dataSnapshot.getChildren()){
+                            else for (DataSnapshot ds : dataSnapshot.getChildren()) {
                                 Tomador disciplina = ds.getValue(Tomador.class);
-                                listaDeDisciplinas.add(disciplina.codigo+"-"+disciplina.nome);
+                                listaDeDisciplinas.add(disciplina.codigo + "-" + disciplina.nome);
                                 arrayDisciplinasAdapter.notifyDataSetChanged();
                             }
                         }
@@ -196,103 +205,13 @@ import com.example.marcello.tomadordefrequencia.componentes.telas.SemDisciplinas
                     });
         }
 
-//        private void pegaDisciplinas() {
-//
-//        mDatabase.child("tomadores/"+tomadorEmUso+"/disciplinas").
-//                addValueEventListener(new ValueEventListener() {
-//
-//                    @Override
-//                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                        Tomador proximaDisciplina;
-//                        arrDisciplinas.clear();
-//                        int ultimaVez = 1;
-//                        Long contador = dataSnapshot.getChildrenCount();
-//                        for (DataSnapshot ds: dataSnapshot.getChildren()){
-//                            disciplina = ds.getValue(Tomador.class);
-//                            if(verificaSeDisciplinaTemAulaHoje(disciplina)) {
-//                                arrDisciplinas.add(disciplina);
-//                            }
-//                            if(contador == ultimaVez) {
-//                                if (!arrDisciplinas.isEmpty()) {
-//                                    intentDaProximaDisciplina();
-//                                } else abreIntentSemResultado();
-//                            }
-//                            contador--;
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(DatabaseError databaseError) {
-//                        Log.d("Log", "passou aqui");
-//                    }
-//                });
-//    }
-//
-//        private void intentDaProximaDisciplina() {
-//            Calendar horarioDisciplina = Calendar.getInstance();
-//
-//            Tomador proximaDisciplina = new Tomador();
-//            long aulaMaisProxima = 0;
-//            String horarioDeInicioAula= null;
-//
-//            for (Tomador disciplina: arrDisciplinas) {
-//                try {
-//                    if(disciplina.horarioDeInicioAula instanceof ArrayList)
-//                        horarioDeInicioAula = (String) ((ArrayList) disciplina.horarioDeInicioAula).get((Integer) DIASDASEMANA.get(diaDaSemanaHoje));
-//                    else if(disciplina.horarioDeInicioAula instanceof HashMap)
-//                        horarioDeInicioAula = (String) ((HashMap) disciplina.horarioDeInicioAula).get(DIASDASEMANA.get(diaDaSemanaHoje).toString());
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                int horas = Integer.parseInt(horarioDeInicioAula.substring(0,2));
-//                int minutos = Integer.parseInt(horarioDeInicioAula.substring(3,5));
-//
-//                horarioDisciplina.set(Calendar.HOUR_OF_DAY, horas);
-//                horarioDisciplina.set(Calendar.MINUTE, minutos);
-//
-//                long horarioDisciplinaEmMili = horarioDisciplina.getTimeInMillis();
-//
-//                if(horarioDisciplinaEmMili > diaHoraAtual.getTime() && (horarioDisciplinaEmMili < aulaMaisProxima || aulaMaisProxima ==0)){
-//                    proximaDisciplina = disciplina;
-//                    aulaMaisProxima = horarioDisciplinaEmMili;
-//                }
-//            }
-//
-//            if(proximaDisciplina.codigo != null) {
-//                Intent intent = new Intent(this, ProximaDisciplina.class);
-//                intent.putExtra("DISCIPLINA_CODIGO", proximaDisciplina.codigo);
-//                intent.putExtra("DISCIPLINA_NOME", proximaDisciplina.nome);
-//                intent.putExtra("DISCIPLINA_NOME_PROFESSOR", proximaDisciplina.nomeProfessor);
-//                intent.putExtra("TOMADOR_ATUAL", tomadorEmUso);
-//                startActivity(intent);
-//                finish();
-//            } else {
-//                Intent intent = new Intent(this, NaoTemMaisDisciplinaHoje.class);
-//                startActivity(intent);
-//                finish();
-//            }
-//        }
-//
-//        private boolean verificaSeDisciplinaTemAulaHoje(Tomador disciplinaAtual) {
-//        for (Object dia: ((ArrayList) disciplinaAtual.diasDaSemana)){
-//            try {
-//                if(dia.toString().equals(DIASDASEMANA.getString(diaDaSemanaHoje))){
-//                    return true;
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//
-//        }
-//        return false;
-//    }
-
     private void abreIntentSemResultado(){
         Intent intent = new Intent(this, SemDisciplinasParaHoje.class);
         startActivity(intent);
         finish();
     }
+
+
 
 
 
