@@ -61,6 +61,7 @@ public class ProximaDisciplina extends AppCompatActivity {
     public final int CHECKOUT_ENCERRADO  = 22;
     public final int SEM_AULA = 99;
     public String idDaProximaAula;
+    private DatabaseReference referenciaDeAulasDaDisciplinasSincronaComFb;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +79,11 @@ public class ProximaDisciplina extends AppCompatActivity {
         ANO = cal.get(Calendar.YEAR);
         MES = cal.get(Calendar.MONTH);
         DIA = cal.get(Calendar.DAY_OF_MONTH);
+
+        ImageButton back = findViewById(R.id.imageButtonBackFinishAct);
+        back.setOnClickListener((v)->{
+            finish();
+        });
 
 
 
@@ -97,6 +103,23 @@ public class ProximaDisciplina extends AppCompatActivity {
         });
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+
+
+        referenciaDeAulasDaDisciplinasSincronaComFb = mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA).getRef();
+        referenciaDeAulasDaDisciplinasSincronaComFb.keepSynced(true);
+
+        referenciaDeAulasDaDisciplinasSincronaComFb.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                dataSnapshot.getValue();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -130,59 +153,35 @@ public class ProximaDisciplina extends AppCompatActivity {
     }
 
     private void pegaAulasDaDisciplina() {
-        mDatabase.child("/disciplinas/" + COD_DISCIPLINA_ATUAL + "/aulas/" + ANO + "/" + MES + "/" + DIA).
-                addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Aula proximaAula = new Aula();
-                        proximaAula = null;
-                        int ultimaVez = 1;
-                        Long contador = dataSnapshot.getChildrenCount();
-                        long milisDaProximaAula = 0;
-                        idDaProximaAula = new String();
-
-                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                            aula = ds.getValue(Aula.class);
-
-                            Calendar horarioDisciplina = Calendar.getInstance();
-                            String horarioDeInicioAula = (String) ((HashMap) aula.hora).get("fim");
-                            int horas = Integer.parseInt(horarioDeInicioAula.substring(0, 2));
-                            int minutos = Integer.parseInt(horarioDeInicioAula.substring(3, 5));
-
-                            horarioDisciplina.set(Calendar.HOUR_OF_DAY, horas);
-                            horarioDisciplina.set(Calendar.MINUTE, minutos);
-
-                            long horarioDisciplinaEmMili = horarioDisciplina.getTimeInMillis();
-
-                            if (proximaAula == null || (horarioDisciplinaEmMili < milisDaProximaAula && milisDaProximaAula > 0)) {
-                                proximaAula = aula;
-                                idDaProximaAula = ds.getKey();
-                                horaQueComecaProximaAula = (String) ((HashMap) aula.hora).get("inicio");
-                                milisDaProximaAula = horarioDisciplinaEmMili;
-                            }
-                            if (contador == ultimaVez && proximaAula != null) {
-                                TextView hora = findViewById(R.id.horaProximaAula);
-                                hora.setText(horaQueComecaProximaAula);
-                                controlaStatusDaAula();
-                            }
-                            contador--;
-                        }
-                        if(proximaAula == null){
-                            STATUS_ATUAL = SEM_AULA;
-                            FragmentTransaction ft = getFragmentManager().beginTransaction();
-                            Fragment semAula = new SemAulasHojeParaDisciplina();
-                            ft.replace(R.id.espaçoParaColocarFragment, semAula);
-                            ft.commitAllowingStateLoss();
-                            dialog.cancel();
-                        }
+        referenciaDeAulasDaDisciplinasSincronaComFb.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.hasChildren()){
+                    for (DataSnapshot dataSnapshotAula: dataSnapshot.getChildren()){
+                        Aula aula = dataSnapshotAula.getValue(Aula.class);
+                        if(aula.checkout.status != 2){
+                            idDaProximaAula = dataSnapshotAula.getKey();
+                            controlaStatusDaAula();
+                        } else mostraFragmentSemAula();
                     }
+                }else mostraFragmentSemAula();
+            }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.d("Log", "passou aqui");
-                    }
-                });
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
+            }
+        });
+
+    }
+
+    private void mostraFragmentSemAula() {
+        STATUS_ATUAL = SEM_AULA;
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment semAula = new SemAulasHojeParaDisciplina();
+        ft.replace(R.id.espaçoParaColocarFragment, semAula);
+        ft.commitAllowingStateLoss();
+        dialog.cancel();
     }
 
     private void controlaStatusDaAula() {
@@ -202,13 +201,9 @@ public class ProximaDisciplina extends AppCompatActivity {
                           FragmentTransaction ft = getFragmentManager().beginTransaction();
                           dsAula = dataSnapshot.getValue(Aula.class);
 
-                          Object checkin = dsAula.checkin;
-                          Object aux = ((HashMap) checkin).get("status");
-                          int statusAulaCheckin = ((Long) aux).intValue();
+                          int statusAulaCheckin = dsAula.checkin.status;
 
-                          Object checkout = dsAula.checkout;
-                          Object aux2 = ((HashMap) checkout).get("status");
-                          int statusAulaCheckout = ((Long) aux2).intValue();
+                          int statusAulaCheckout = dsAula.checkout.status;
                           findViewById(R.id.loginProfessor).setVisibility(View.VISIBLE);
                           switch (statusAulaCheckin) {
                               case 0:

@@ -29,6 +29,16 @@
             android:layout_height="200sp"
             android:padding="16dp">
 
+            <ImageButton
+                android:id="@+id/imageButtonBackFinishAct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:background="@color/blueTomador"
+                android:layout_alignParentTop="true"
+                app:srcCompat="?attr/actionModeCloseDrawable" />
+
             <TextView
                 android:id="@+id/nomeDaDisciplina"
                 android:layout_width="match_parent"
