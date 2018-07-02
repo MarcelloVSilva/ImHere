@@ -26,6 +26,8 @@ public class InputEdit extends AppCompatActivity {
         setContentView(R.layout.input);
 
         EditText respostaCampo = findViewById(R.id.insereCodigo);
+        TextView nomeDisciplina = findViewById(R.id.disciplinaNoInput);
+        nomeDisciplina.setText(getIntent().getStringExtra("DISCIPLINA"));
         String typeEdit = getIntent().getStringExtra("TYPE");
         if (typeEdit.equals("PASSWORD")){
             respostaCampo.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);

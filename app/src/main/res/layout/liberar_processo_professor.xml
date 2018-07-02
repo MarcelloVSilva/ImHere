@@ -46,7 +46,7 @@
                 android:id="@+id/nomeDaDisciplina"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30sp"
+                android:layout_marginTop="25sp"
                 android:layout_below="@id/imageButtonBackFinishAct"
                 android:text="nome"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -75,7 +75,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignTop="@+id/card_view_libera_checkin"
         android:layout_gravity="center"
-        android:layout_marginLeft="50sp"
+        android:layout_marginLeft="100sp"
         card_view:cardCornerRadius="4sp">
         <RelativeLayout
             android:layout_width="match_parent"
@@ -87,7 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@id/detalhesDisciplina2"
-            android:layout_marginBottom="20sp"
+            android:layout_marginBottom="30sp"
             android:text="Detalhes"
             android:textAllCaps="true"
             android:textSize="20sp"
@@ -101,7 +101,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:text="TextView2"
-                android:layout_marginBottom="20sp"
+                android:layout_marginBottom="30sp"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -112,7 +112,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_above="@+id/detalhesDisciplina4"
-                android:layout_marginBottom="20sp"
+                android:layout_marginBottom="30sp"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:text="TextView3" />
@@ -123,7 +123,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
-                android:layout_marginBottom="20sp"
+                android:layout_marginBottom="40sp"
                 android:layout_alignParentBottom="true"
                 android:textSize="20sp"
                 android:textStyle="bold"

@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -62,6 +63,8 @@ public class ProximaDisciplina extends AppCompatActivity {
     public final int SEM_AULA = 99;
     public String idDaProximaAula;
     private DatabaseReference referenciaDeAulasDaDisciplinasSincronaComFb;
+    private View campoTextoHorarioDaAula;
+    private View campoHorarioDaAula;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,6 +99,8 @@ public class ProximaDisciplina extends AppCompatActivity {
 
         loginProfessorFragment.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
+
+                inputIntent.putExtra("DISCIPLINA", NOME_DISCIPLINA_ATUAL);
                 inputIntent.putExtra("TYPE", "PASSWORD");
                 inputIntent.putExtra("HINT_INPUT", "Digite o código de acesso");
                 startActivityForResult(inputIntent, RESULTADO_CODIGO_DISCIPLINA);
@@ -141,6 +146,7 @@ public class ProximaDisciplina extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+
         super.onStart();
         dialog = ProgressDialog.show(this, "",
                 "Carregando aula", true);
@@ -177,6 +183,9 @@ public class ProximaDisciplina extends AppCompatActivity {
 
     private void mostraFragmentSemAula() {
         STATUS_ATUAL = SEM_AULA;
+        campoTextoHorarioDaAula = findViewById(R.id.campoFixoHorarioDaAula);
+        campoHorarioDaAula = findViewById(R.id.horaProximaAula);
+        campoTextoHorarioDaAula.setVisibility(View.INVISIBLE);
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         Fragment semAula = new SemAulasHojeParaDisciplina();
         ft.replace(R.id.espaçoParaColocarFragment, semAula);
@@ -185,6 +194,8 @@ public class ProximaDisciplina extends AppCompatActivity {
     }
 
     private void controlaStatusDaAula() {
+        campoTextoHorarioDaAula.setVisibility(View.VISIBLE);
+
         mDatabase.child("/disciplinas/"+COD_DISCIPLINA_ATUAL+"/aulas/"+ ANO+"/"+MES+"/"+DIA+"/"+idDaProximaAula).
                 addValueEventListener(new ValueEventListener() {
 
@@ -205,6 +216,10 @@ public class ProximaDisciplina extends AppCompatActivity {
 
                           int statusAulaCheckout = dsAula.checkout.status;
                           findViewById(R.id.loginProfessor).setVisibility(View.VISIBLE);
+                          TextView horaProximaAula = findViewById(R.id.horaProximaAula);
+                          if(!dsAula.hora.inicio.equals(""))
+                            horaProximaAula.setText(dsAula.hora.inicio);
+
                           switch (statusAulaCheckin) {
                               case 0:
                                   aindaNaoComecou = new AindaNaoComecou();

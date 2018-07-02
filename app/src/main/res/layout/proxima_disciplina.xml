@@ -58,7 +58,7 @@
                 android:textSize="24sp" />
 
             <TextView
-                android:id="@+id/proximaAula"
+                android:id="@+id/campoFixoHorarioDaAula"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
@@ -69,9 +69,8 @@
                 android:id="@+id/horaProximaAula"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBaseline="@id/proximaAula"
-                android:layout_alignRight="@id/proximaAula"
-                android:text="14:00"
+                android:layout_alignBaseline="@id/campoFixoHorarioDaAula"
+                android:layout_alignRight="@id/campoFixoHorarioDaAula"
                 android:textSize="24sp" />
 
             <ImageButton

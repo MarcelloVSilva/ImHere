@@ -29,6 +29,18 @@ tools:context="com.example.marcello.tomadordefrequencia.view.MainActivity">
         android:layout_height="200sp"
         android:padding="16dp">
 
+        <TextView
+            android:id="@+id/disciplinaNoInput"
+            android:layout_width="match_parent"
+            android:layout_height="35sp"
+            android:layout_alignTop="@+id/imageButtonBackFinishAct"
+            android:layout_marginLeft="33dp"
+            android:layout_marginStart="33dp"
+            android:layout_toEndOf="@+id/imageButtonBackFinishAct"
+            android:layout_toRightOf="@+id/imageButtonBackFinishAct"
+            android:textAllCaps="true"
+            android:textSize="24sp" />
+
         <EditText
             android:id="@+id/insereCodigo"
             android:layout_width="400sp"

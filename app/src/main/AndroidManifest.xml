@@ -37,7 +37,6 @@
         <activity android:name=".componentes.telas.NaoTemMaisDisciplinaHoje" />
         <activity android:name=".componentes.telas.InputEdit" />
         <activity android:name=".componentes.telas.LiberaInOutProfessor" />
-        <activity android:name=".componentes.telas.ListaDisciplinasPorTomador"></activity>
     </application>
 
 </manifest>

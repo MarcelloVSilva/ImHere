@@ -8,7 +8,7 @@ import java.lang.reflect.Array;
  */
 
 public class Aula implements Serializable {
-    public Object hora;
+    public Hora hora;
     public String data;
     public String sala;
     public Processo checkin;
@@ -18,7 +18,7 @@ public class Aula implements Serializable {
 
     }
 
-    public Aula(String data, Object hora, String sala, Processo checkin, Processo checkout) {
+    public Aula(String data, Hora hora, String sala, Processo checkin, Processo checkout) {
         this.hora = hora;
         this.data = data;
         this.sala = sala;
