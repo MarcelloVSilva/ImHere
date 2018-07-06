@@ -194,6 +194,7 @@ public class ProximaDisciplina extends AppCompatActivity {
     }
 
     private void controlaStatusDaAula() {
+        campoTextoHorarioDaAula = findViewById(R.id.campoFixoHorarioDaAula);
         campoTextoHorarioDaAula.setVisibility(View.VISIBLE);
 
         mDatabase.child("/disciplinas/"+COD_DISCIPLINA_ATUAL+"/aulas/"+ ANO+"/"+MES+"/"+DIA+"/"+idDaProximaAula).

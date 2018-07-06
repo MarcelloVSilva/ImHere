@@ -11,10 +11,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="55dp"
-        android:textAllCaps="true"
-        android:textSize="30sp"
+        android:paddingBottom="20sp"
+        android:layout_marginTop="25sp"
         android:text="Sem aulas cadastradas para hoje"
+        android:textColor="@android:color/black"
+        android:textSize="30sp"
         android:textStyle="bold" />
 
     <ImageView
@@ -22,6 +23,7 @@
         android:layout_width="400dp"
         android:layout_height="400dp"
         android:layout_below="@+id/tituloSemAulasHoje"
+        android:paddingBottom="20sp"
         app:srcCompat="@drawable/sem_aulas"
         android:layout_centerHorizontal="true"/>
 
