@@ -10,13 +10,12 @@
         android:id="@+id/tituloEmProcesso"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/num"
+        android:layout_above="@+id/tecladoNum"
         android:layout_alignEnd="@+id/imageViewEmProcesso"
         android:layout_alignRight="@+id/imageViewEmProcesso"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="64dp"
         android:layout_marginRight="64dp"
-        android:text="Checkout liberado"
         android:textColor="@android:color/background_dark"
         android:textSize="30sp"
         android:textStyle="bold" />
@@ -27,20 +26,20 @@
         android:layout_height="400dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/tituloEmProcesso"
-        android:layout_marginLeft="102dp"
-        android:layout_marginStart="102dp"
+        android:layout_alignTop="@+id/tecladoNum"
+        android:layout_marginLeft="68dp"
+        android:layout_marginStart="68dp"
         app:srcCompat="@drawable/em_processo" />
 
     <Button
         android:id="@+id/inserirMatricula"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/num"
-        android:layout_alignLeft="@+id/num"
+        android:layout_alignEnd="@+id/tecladoNum"
+        android:layout_alignLeft="@+id/tecladoNum"
         android:layout_alignParentBottom="true"
-        android:layout_alignRight="@+id/num"
-        android:layout_alignStart="@+id/num"
+        android:layout_alignRight="@+id/tecladoNum"
+        android:layout_alignStart="@+id/tecladoNum"
         android:text="Inserir Matrícula"
         android:textAllCaps="false"
         android:textSize="24sp" />
@@ -50,12 +49,12 @@
         android:id="@+id/matriculaDigitaDial"
         android:layout_width="wrap_content"
         android:layout_height="86dp"
-        android:layout_alignLeft="@id/num"
+        android:layout_alignLeft="@id/tecladoNum"
         android:textSize="38dp" />
 
 
     <com.fxn769.Numpad
-        android:id="@+id/num"
+        android:id="@+id/tecladoNum"
         android:layout_width="300sp"
         android:layout_height="400sp"
         android:layout_alignParentEnd="true"

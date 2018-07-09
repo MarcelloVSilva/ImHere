@@ -27,9 +27,9 @@ public class FimDoProcesso extends Fragment {
         String checkinOuCheckout = this.getArguments().getString("checkinOuCheckout");
 
         titulo.setText(checkinOuCheckout+" encerrado");
-        if(checkinOuCheckout.equals("checkin"))
+        if(checkinOuCheckout.equals("Check-in"))
             img.setImageResource(R.drawable.checkin_encerrado);
-        else if (checkinOuCheckout.equals("checkout"))
+        else if (checkinOuCheckout.equals("Check-out"))
             img.setImageResource(R.drawable.checkout_encerrado);
 
         return view;

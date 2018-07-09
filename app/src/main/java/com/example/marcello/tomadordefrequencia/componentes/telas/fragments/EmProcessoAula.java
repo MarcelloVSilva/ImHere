@@ -78,7 +78,7 @@ public class EmProcessoAula extends Fragment {
             }
         });
 
-        numpad = view.findViewById(R.id.num);
+        numpad = view.findViewById(R.id.tecladoNum);
         campoMatricula = view.findViewById(R.id.matriculaDigitaDial);
         campoMatricula.setHint("Digite sua matrícula");
         numpad.setOnTextChangeListner((String text, int digits_remaining) -> {

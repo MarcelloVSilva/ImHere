@@ -11,9 +11,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="55dp"
-        android:text="Checkin ainda não liberado"
-        android:textAllCaps="true"
+        android:layout_marginTop="25sp"
+        android:paddingBottom="20sp"
+        android:text="Check-in ainda não liberado"
+        android:textColor="@android:color/black"
         android:textSize="30sp"
         android:textStyle="bold" />
 
@@ -24,5 +25,6 @@
         android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="41dp"
+        android:paddingBottom="20sp"
         app:srcCompat="@drawable/ainda_nao_comecou" />
 </RelativeLayout>

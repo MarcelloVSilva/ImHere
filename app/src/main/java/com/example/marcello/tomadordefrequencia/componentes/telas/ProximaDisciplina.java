@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.marcello.tomadordefrequencia.R;
 import com.example.marcello.tomadordefrequencia.componentes.telas.fragments.AindaNaoComecou;
@@ -138,7 +139,7 @@ public class ProximaDisciplina extends AppCompatActivity {
                     telaProfessor.putExtra("CODIGO_TOMADOR_SALA", TOMADOR_ATUAL_EM_USO);
                     telaProfessor.putExtra("ID_AULA", idDaProximaAula);
                     startActivity(telaProfessor);
-                }
+                } else Toast.makeText(this, "Código errado", Toast.LENGTH_LONG).show();
 
             }
         }
@@ -226,7 +227,7 @@ public class ProximaDisciplina extends AppCompatActivity {
                                   aindaNaoComecou = new AindaNaoComecou();
                                   ft.replace(R.id.espaçoParaColocarFragment, aindaNaoComecou, "aindaNaoComecou");
                                   STATUS_ATUAL = CHECKIN_AINDA_NAO_COMECOU;
-                                  bundle.putString("checkinOuCheckout", "checkin");
+                                  bundle.putString("checkinOuCheckout", "Check-in");
                                   podeLerNfcAgora = false;
                                   aindaNaoComecou.setArguments(bundle);
                                   break;
@@ -234,7 +235,7 @@ public class ProximaDisciplina extends AppCompatActivity {
                                   emProcesso = new EmProcessoAula();
                                   ft.replace(R.id.espaçoParaColocarFragment, emProcesso, "emProcesso");
                                   STATUS_ATUAL = CHECKIN_EM_PROCESSO;
-                                  bundle.putString("checkinOuCheckout", "checkin");
+                                  bundle.putString("checkinOuCheckout", "Check-in");
                                   podeLerNfcAgora = true;
                                   emProcesso.setArguments(bundle);
                                   break;
@@ -244,7 +245,7 @@ public class ProximaDisciplina extends AppCompatActivity {
                                           fimDoProcesso = new FimDoProcesso();
                                           ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso, "fimDoProcesso");
                                           STATUS_ATUAL = CHECKIN_ENCERRADO;
-                                          bundle.putString("checkinOuCheckout", "checkin");
+                                          bundle.putString("checkinOuCheckout", "Check-in");
                                           podeLerNfcAgora = false;
                                           fimDoProcesso.setArguments(bundle);
                                         break;
@@ -252,7 +253,7 @@ public class ProximaDisciplina extends AppCompatActivity {
                                           emProcesso = new EmProcessoAula();
                                           ft.replace(R.id.espaçoParaColocarFragment, emProcesso, "emProcesso");
                                           STATUS_ATUAL = CHECKOUT_EM_PROCESSO;
-                                          bundle.putString("checkinOuCheckout", "checkout");
+                                          bundle.putString("checkinOuCheckout", "Check-out");
                                           podeLerNfcAgora = true;
                                           emProcesso.setArguments(bundle);
                                           break;
@@ -260,7 +261,7 @@ public class ProximaDisciplina extends AppCompatActivity {
                                           fimDoProcesso = new FimDoProcesso();
                                           ft.replace(R.id.espaçoParaColocarFragment, fimDoProcesso, "fimDoProcesso");
                                           STATUS_ATUAL = CHECKOUT_ENCERRADO;
-                                          bundle.putString("checkinOuCheckout", "checkout");
+                                          bundle.putString("checkinOuCheckout", "Check-out");
                                           podeLerNfcAgora = false;
                                           findViewById(R.id.loginProfessor).setVisibility(View.INVISIBLE);
                                           fimDoProcesso.setArguments(bundle);

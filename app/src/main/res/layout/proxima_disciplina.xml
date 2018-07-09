@@ -80,7 +80,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
-                app:srcCompat="@drawable/sem_aulas" />
+                app:srcCompat="@drawable/login_aula" />
 
         </RelativeLayout>
 
